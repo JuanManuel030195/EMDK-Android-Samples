@@ -28,7 +28,7 @@
                         android:id="@+id/textViewSS"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Select Scanner:" />
+                        android:text="@string/select_scanner" />
                 </TableRow>
 
                 <TableRow
