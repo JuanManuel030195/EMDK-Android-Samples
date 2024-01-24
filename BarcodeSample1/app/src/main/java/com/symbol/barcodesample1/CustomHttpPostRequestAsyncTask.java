@@ -11,11 +11,11 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, String> {
     private JSONObject requestBody;
-    private Callable<Void> callback;
+    private Function<String, Void> callbackFunction;
     private String urlEndpoint;
     private String strResponse;
     private int responseCode;
@@ -25,8 +25,8 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
         this.requestBody = requestBody;
     }
 
-    public void setCallback(Callable<Void> callback) {
-        this.callback = callback;
+    public void setCallbackFunction(Function<String, Void> callback) {
+        this.callbackFunction = callback;
     }
 
     @Override
@@ -68,12 +68,12 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
 
     @Override
     protected void onPostExecute(String result) {
-        if (this.callback == null) {
+        if (this.callbackFunction == null) {
             return;
         }
 
         try {
-            this.callback.call();
+            this.callbackFunction.apply(this.strResponse);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

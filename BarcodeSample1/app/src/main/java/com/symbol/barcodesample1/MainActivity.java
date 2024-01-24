@@ -413,8 +413,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
 
         String endpoint = "/index.php?r=auth%2Flogin";
-        restApiController.post(endpoint, requestBody, () -> {
-            textViewLoginStatus.setText("Iniciaste sesión correctamente!");
+        restApiController.post(endpoint, requestBody, (String strResponse) -> {
+            textViewLoginStatus.setText(strResponse);
 //            textViewLoginStatus.setVisibility(View.INVISIBLE);
             return null;
         });
