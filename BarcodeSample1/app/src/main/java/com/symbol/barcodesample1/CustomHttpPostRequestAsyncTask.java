@@ -61,6 +61,9 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
 
             return String.valueOf(this.responseCode);
         } catch (Exception e) {
+            this.strResponse = e.getMessage();
+            this.callbackFunction.apply(this.strResponse);
+
             System.out.println(e.getMessage());
             return null;
         }
@@ -73,7 +76,7 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
         }
 
         try {
-            this.callbackFunction.apply(this.strResponse);
+            this.callbackFunction.apply(String.valueOf(this.responseCode));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
