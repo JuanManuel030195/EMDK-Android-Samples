@@ -7,6 +7,7 @@ package com.symbol.barcodesample1;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import com.symbol.emdk.EMDKManager;
 import com.symbol.emdk.EMDKResults;
@@ -41,11 +42,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.content.pm.ActivityInfo;
+
+import org.json.JSONObject;
 
 public class MainActivity extends Activity implements EMDKListener, DataListener, StatusListener, ScannerConnectionListener, OnCheckedChangeListener {
 
@@ -74,6 +78,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private boolean bDecoderSettingsChanged = false;
     private boolean bExtScannerDisconnected = false;
     private final Object lock = new Object();
+
+    private final RestApiController restApiController = new RestApiController();
+
+    private String username = "";
+    private String password = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -385,9 +394,46 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    public void login(View view) {
+        getUserName();
+        getPassword();
+
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.login_progress_signing_in_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (Exception e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endpoint = "/index.php?r=auth%2Flogin";
+        restApiController.post(endpoint, requestBody, () -> {
+            textViewLoginStatus.setText("Iniciaste sesión correctamente!");
+//            textViewLoginStatus.setVisibility(View.INVISIBLE);
+            return null;
+        });
+
+    }
+
     public void softScan(View view) {
         bSoftTriggerSelected = true;
         cancelRead();
+    }
+
+    private void getUserName() {
+        EditText usernameEditText = (EditText) findViewById(R.id.userName);
+        this.username = usernameEditText.getText().toString();
+    }
+
+    private void getPassword() {
+        EditText passwordEditText = (EditText) findViewById(R.id.password);
+        this.password = passwordEditText.getText().toString();
     }
 
     private void cancelRead(){
