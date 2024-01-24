@@ -452,23 +452,38 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
-                textViewLoginStatus.setText(e.getMessage());
-                textViewLoginStatus.setVisibility(View.VISIBLE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                JSONObject responseBody = null;
                 try {
-                    responseBody = new JSONObject(response.body().string());
-                } catch (JSONException e) {
-                    textViewLoginStatus.setText(R.string.sync_error_text);
-                    System.out.println(e.getMessage());
-                    return;
-                }
+                    final JSONObject responseBody = new JSONObject(
+                        response.body().string()
+                    );
 
-                textViewLoginStatus.setText(responseBody.toString());
-                textViewLoginStatus.setVisibility(View.VISIBLE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewLoginStatus.setText(responseBody.toString());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } catch (JSONException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
             }
         });
     }
