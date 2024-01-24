@@ -4,10 +4,10 @@
  */
 package com.symbol.barcodesample1;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import com.symbol.emdk.EMDKManager;
 import com.symbol.emdk.EMDKResults;
@@ -49,7 +49,17 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.content.pm.ActivityInfo;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends Activity implements EMDKListener, DataListener, StatusListener, ScannerConnectionListener, OnCheckedChangeListener {
 
@@ -79,8 +89,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private boolean bExtScannerDisconnected = false;
     private final Object lock = new Object();
 
-    private final RestApiController restApiController = new RestApiController();
-
+    private final MediaType jsonMediaType = MediaType.parse("application/json; charset=utf-8");
+    private final String baseUrl = "http://cda.ceaqueretaro.gob.mx/";
     private String username = "";
     private String password = "";
 
@@ -406,24 +416,56 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         try {
             requestBody.put("numeroEmpleado", this.username);
             requestBody.put("password", this.password);
-        } catch (Exception e) {
+        } catch (JSONException e) {
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
             return;
         }
 
-        String endpoint = "/index.php?r=auth%2Flogin";
-        restApiController.post(endpoint, requestBody, (String strResponse) -> {
-            textViewLoginStatus.setText(strResponse);
-//            textViewLoginStatus.setVisibility(View.INVISIBLE);
-            return null;
-        });
+        String endPoint = "index.php?r=auth%2Flogin";
+
 
     }
 
     public void softScan(View view) {
         bSoftTriggerSelected = true;
         cancelRead();
+    }
+
+    private void postRequest(String endPoint, @NotNull JSONObject requestBody) {
+        OkHttpClient client = new OkHttpClient();
+        String url = baseUrl + endPoint;
+        RequestBody body = RequestBody.create(this.jsonMediaType, requestBody.toString());
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                textViewLoginStatus.setText(e.getMessage());
+                textViewLoginStatus.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                JSONObject responseBody = null;
+                try {
+                    responseBody = new JSONObject(response.body().string());
+                } catch (JSONException e) {
+                    textViewLoginStatus.setText(R.string.sync_error_text);
+                    System.out.println(e.getMessage());
+                    return;
+                }
+
+                textViewLoginStatus.setText(responseBody.toString());
+                textViewLoginStatus.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void getUserName() {
