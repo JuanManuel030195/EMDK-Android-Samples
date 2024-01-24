@@ -62,9 +62,8 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
             return String.valueOf(this.responseCode);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return null;
         }
-
-        return null;
     }
 
     @Override
@@ -73,12 +72,10 @@ public class CustomHttpPostRequestAsyncTask extends AsyncTask<String, Void, Stri
             return;
         }
 
-        if (this.responseCode == HttpURLConnection.HTTP_OK) {
-            try {
-                this.callback.call();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+        try {
+            this.callback.call();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 }
