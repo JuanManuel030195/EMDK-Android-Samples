@@ -423,7 +423,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
 
         String endPoint = "index.php?r=auth%2Flogin";
-
+        try {
+            postRequest(endPoint, requestBody);
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
 
     }
 
@@ -432,7 +437,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         cancelRead();
     }
 
-    private void postRequest(String endPoint, @NotNull JSONObject requestBody) {
+    private void postRequest(String endPoint, @NotNull JSONObject requestBody) throws IOException {
         OkHttpClient client = new OkHttpClient();
         String url = baseUrl + endPoint;
         RequestBody body = RequestBody.create(this.jsonMediaType, requestBody.toString());
