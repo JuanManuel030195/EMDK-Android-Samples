@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import com.symbol.emdk.EMDKManager;
-import com.symbol.emdk.EMDKResults;
 import com.symbol.emdk.EMDKManager.EMDKListener;
 import com.symbol.emdk.EMDKManager.FEATURE_TYPE;
 import com.symbol.emdk.barcode.BarcodeManager;
@@ -32,7 +32,6 @@ import com.symbol.emdk.barcode.StatusData;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -424,7 +423,34 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         String endPoint = "index.php?r=auth%2Flogin";
         try {
-            postRequest(endPoint, requestBody);
+            postRequest(
+                endPoint,
+                requestBody,
+                (IOException e) -> {
+                    onLoginFailed(e);
+                    return null;
+                },
+                (JSONObject responseBody) -> {
+                    try {
+                        if (
+                            responseBody.has("success") &&
+                            responseBody.getBoolean("success")
+                        ) {
+                            onLoginSuccess(responseBody.toString());
+                        }
+                    } catch (JSONException e) {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                    }
+
+                    return null;
+                },
+                (JSONException e) -> {
+                    textViewLoginStatus.setText(e.getMessage());
+                    textViewLoginStatus.setVisibility(View.VISIBLE);
+                    return null;
+                }
+            );
         } catch (IOException e) {
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
@@ -449,9 +475,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         textViewLoginStatus.setVisibility(View.VISIBLE);
     }
 
-    private void onLoginFailed() {
+    private void onLoginFailed(IOException e) {
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText("Login failed");
+        textViewLoginStatus.setText(e.getMessage());
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
         this.password = "";
@@ -459,7 +485,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         passwordEditText.setText(this.password);
     }
 
-    private void postRequest(String endPoint, @NotNull JSONObject requestBody) throws IOException {
+    private void postRequest(
+        String endPoint,
+        @NotNull JSONObject requestBody,
+        Function<IOException, Void> onFail,
+        Function<JSONObject, Void> onResponse,
+        Function<JSONException, Void> onJsonException
+    ) throws IOException {
         OkHttpClient client = new OkHttpClient();
         String url = baseUrl + endPoint;
         RequestBody body = RequestBody.create(this.jsonMediaType, requestBody.toString());
@@ -467,8 +499,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 .url(url)
                 .post(body)
                 .build();
-
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -480,7 +510,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                onLoginFailed();
+                                onFail.apply(e);
                             }
                         });
                     }
@@ -497,25 +527,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                if (
-                                    responseBody.has("success") &&
-                                    responseBody.getBoolean("success")
-                                ) {
-                                    onLoginSuccess(responseBody.toString());
-                                }
-                            } catch (JSONException e) {
-                                textViewLoginStatus.setText(e.getMessage());
-                                textViewLoginStatus.setVisibility(View.VISIBLE);
-                            }
+                            onResponse.apply(responseBody);
                         }
                     });
                 } catch (JSONException e) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            textViewLoginStatus.setText(e.getMessage());
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                            onJsonException.apply(e);
                         }
                     });
                 }
