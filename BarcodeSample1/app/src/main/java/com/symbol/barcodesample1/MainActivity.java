@@ -437,13 +437,26 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         cancelRead();
     }
 
-    private void hideLoginElements() {
+    private void onLoginSuccess(String info) {
         findViewById(R.id.userNameLabel).setVisibility(View.GONE);
         findViewById(R.id.userName).setVisibility(View.GONE);
         findViewById(R.id.passwordLabel).setVisibility(View.GONE);
         findViewById(R.id.password).setVisibility(View.GONE);
         findViewById(R.id.loginButton).setVisibility(View.GONE);
-        findViewById(R.id.loginProgress).setVisibility(View.GONE);
+
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(info);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+    }
+
+    private void onLoginFailed() {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText("Login failed");
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        this.password = "";
+        EditText passwordEditText = (EditText) findViewById(R.id.password);
+        passwordEditText.setText(this.password);
     }
 
     private void postRequest(String endPoint, @NotNull JSONObject requestBody) throws IOException {
@@ -464,8 +477,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textViewLoginStatus.setText(e.getMessage());
-                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                onLoginFailed();
+                            }
+                        });
                     }
                 });
             }
@@ -485,7 +502,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                     responseBody.has("success") &&
                                     responseBody.getBoolean("success")
                                 ) {
-                                    hideLoginElements();
+                                    onLoginSuccess(responseBody.toString());
                                 }
                             } catch (JSONException e) {
                                 textViewLoginStatus.setText(e.getMessage());
