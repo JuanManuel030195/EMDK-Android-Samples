@@ -103,29 +103,29 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setDefaultOrientation();
 
-        textViewData = (TextView)findViewById(R.id.textViewData);
-        textViewStatus = (TextView)findViewById(R.id.textViewStatus);
-        checkBoxEAN8 = (CheckBox)findViewById(R.id.checkBoxEAN8);
-        checkBoxEAN13 = (CheckBox)findViewById(R.id.checkBoxEAN13);
-        checkBoxCode39 = (CheckBox)findViewById(R.id.checkBoxCode39);
-        checkBoxCode128 = (CheckBox)findViewById(R.id.checkBoxCode128);
-        spinnerScannerDevices = (Spinner)findViewById(R.id.spinnerScannerDevices);
-
-        EMDKResults results = EMDKManager.getEMDKManager(getApplicationContext(), this);
-        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-            updateStatus("EMDKManager object request failed!");
-            return;
-        }
-
-        checkBoxEAN8.setOnCheckedChangeListener(this);
-        checkBoxEAN13.setOnCheckedChangeListener(this);
-        checkBoxCode39.setOnCheckedChangeListener(this);
-        checkBoxCode128.setOnCheckedChangeListener(this);
-
-        addSpinnerScannerDevicesListener();
-
-        textViewData.setSelected(true);
-        textViewData.setMovementMethod(new ScrollingMovementMethod());
+//        textViewData = (TextView)findViewById(R.id.textViewData);
+//        textViewStatus = (TextView)findViewById(R.id.textViewStatus);
+//        checkBoxEAN8 = (CheckBox)findViewById(R.id.checkBoxEAN8);
+//        checkBoxEAN13 = (CheckBox)findViewById(R.id.checkBoxEAN13);
+//        checkBoxCode39 = (CheckBox)findViewById(R.id.checkBoxCode39);
+//        checkBoxCode128 = (CheckBox)findViewById(R.id.checkBoxCode128);
+//        spinnerScannerDevices = (Spinner)findViewById(R.id.spinnerScannerDevices);
+//
+//        EMDKResults results = EMDKManager.getEMDKManager(getApplicationContext(), this);
+//        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
+//            updateStatus("EMDKManager object request failed!");
+//            return;
+//        }
+//
+//        checkBoxEAN8.setOnCheckedChangeListener(this);
+//        checkBoxEAN13.setOnCheckedChangeListener(this);
+//        checkBoxCode39.setOnCheckedChangeListener(this);
+//        checkBoxCode128.setOnCheckedChangeListener(this);
+//
+//        addSpinnerScannerDevicesListener();
+//
+//        textViewData.setSelected(true);
+//        textViewData.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
