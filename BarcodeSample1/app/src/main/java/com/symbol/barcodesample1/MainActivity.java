@@ -437,6 +437,15 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         cancelRead();
     }
 
+    private void hideLoginElements() {
+        findViewById(R.id.userNameLabel).setVisibility(View.GONE);
+        findViewById(R.id.userName).setVisibility(View.GONE);
+        findViewById(R.id.passwordLabel).setVisibility(View.GONE);
+        findViewById(R.id.password).setVisibility(View.GONE);
+        findViewById(R.id.loginButton).setVisibility(View.GONE);
+        findViewById(R.id.loginProgress).setVisibility(View.GONE);
+    }
+
     private void postRequest(String endPoint, @NotNull JSONObject requestBody) throws IOException {
         OkHttpClient client = new OkHttpClient();
         String url = baseUrl + endPoint;
@@ -471,8 +480,17 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            textViewLoginStatus.setText(responseBody.toString());
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                            try {
+                                if (
+                                    responseBody.has("success") &&
+                                    responseBody.getBoolean("success")
+                                ) {
+                                    hideLoginElements();
+                                }
+                            } catch (JSONException e) {
+                                textViewLoginStatus.setText(e.getMessage());
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
                 } catch (JSONException e) {
