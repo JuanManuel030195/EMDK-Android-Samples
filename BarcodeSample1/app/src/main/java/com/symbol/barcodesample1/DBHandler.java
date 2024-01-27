@@ -199,6 +199,24 @@ public class DBHandler extends SQLiteOpenHelper {
         return asset;
     }
 
+    public void clearEmployees() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + EMPLOYEES_TABLE_NAME);
+        db.close();
+    }
+
+    public void clearBuildings() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + BUILDINGS_TABLE_NAME);
+        db.close();
+    }
+
+    public void clearAssets() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + ASSETS_TABLE_NAME);
+        db.close();
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS employees");
