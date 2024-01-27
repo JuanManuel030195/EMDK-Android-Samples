@@ -199,6 +199,36 @@ public class DBHandler extends SQLiteOpenHelper {
         return asset;
     }
 
+    public Employee getEmployeeByNumber(String number) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{number});
+        Employee employee = null;
+        if (cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndex(EMPLOYEES_NAME_COL));
+            int level = cursor.getInt(cursor.getColumnIndex(EMPLOYEES_LEVEL_COL));
+            employee = new Employee(number, name, level);
+        }
+        cursor.close();
+        db.close();
+        return employee;
+    }
+
+    public Building getBuildingById(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + BUILDINGS_TABLE_NAME + " WHERE " + BUILDINGS_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+        Building building = null;
+        if (cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndex(BUILDINGS_NAME_COL));
+            String number = cursor.getString(cursor.getColumnIndex(BUILDINGS_NUMBER_COL));
+            building = new Building(id, name, number);
+        }
+        cursor.close();
+        db.close();
+        return building;
+    }
+
     public void clearEmployees() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + EMPLOYEES_TABLE_NAME);
