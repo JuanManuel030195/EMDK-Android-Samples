@@ -127,6 +127,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         setEmployees(dbHandler.getEmployees());
         setEmployeesToSpinner();
 
+
         setBuildings(dbHandler.getBuildings());
         setBuildingsToSpinner();
 
@@ -158,6 +159,27 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         appState = AppState.NOT_LOGGED_IN;
         updateVisualComponentsBasedOnAppState(appState);
+
+        updateSyncButtonsText();
+    }
+
+    private void updateSyncButtonsText() {
+        String buttonText;
+
+        buttonText = getResources().getString(R.string.sync_with_server_button_text);
+        buttonText = buttonText + " (" + this.assets.length + " en local)";
+        Button syncWithServerButton = (Button) findViewById(R.id.syncWithServerButton);
+        syncWithServerButton.setText(buttonText);
+
+        buttonText = getResources().getString(R.string.sync_employees);
+        buttonText = buttonText + " (" + this.employees.length + " en local)";
+        Button getEmployeesButton = (Button) findViewById(R.id.syncEmployeesWithServerButton);
+        getEmployeesButton.setText(buttonText);
+
+        buttonText = getResources().getString(R.string.sync_buildings);
+        buttonText = buttonText + " (" + this.buildings.length + " en local)";
+        Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
+        getBuildingsButton.setText(buttonText);
     }
 
     private void addTableRowToTableLayout(Asset asset) {
@@ -571,12 +593,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             dbHandler.addAssets(assetsArray);
                             setAssets(assetsArray);
 
-                            return null;
+                            updateSyncButtonsText();
+
                         } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
                             textViewLoginStatus.setVisibility(View.VISIBLE);
-                            return null;
                         }
+
+                        return null;
                     },
                     (JSONException e) -> {
                         textViewLoginStatus.setText(e.getMessage());
@@ -654,6 +678,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             dbHandler.addEmployees(employeesArray);
                             setEmployees(employeesArray);
                             setEmployeesToSpinner();
+
+                            updateSyncButtonsText();
 
                         } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
@@ -753,6 +779,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             dbHandler.addBuildings(buildingsArray);
                             setBuildings(buildingsArray);
                             setBuildingsToSpinner();
+
+                            updateSyncButtonsText();
 
                         } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
