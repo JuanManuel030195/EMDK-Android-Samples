@@ -122,6 +122,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         dbHandler = new DBHandler(MainActivity.this);
 
+        dbHandler.clearEmployees();
+        dbHandler.clearBuildings();
+
         setEmployees(dbHandler.getEmployees());
         setEmployeesToSpinner();
 
