@@ -542,6 +542,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 return null;
                             }
 
+                            textViewLoginStatus.setVisibility(View.GONE);
+
                             JSONArray employees = responseBody.getJSONArray("employees");
                             Employee[] employeesArray = new Employee[employees.length()];
                             for (int i = 0; i < employees.length(); i++) {
@@ -623,6 +625,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             if (!responseBody.has("buildings")) {
                                 return null;
                             }
+
+                            textViewLoginStatus.setVisibility(View.GONE);
 
                             JSONArray buildings = responseBody.getJSONArray("buildings");
                             Building[] buildingsArray = new Building[buildings.length()];
