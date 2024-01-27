@@ -187,10 +187,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     private void setEmployeesToSpinner() {
         Spinner spinner = (Spinner) findViewById(R.id.employeeSpinner);
-        ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(
-                this,
+
+        ArrayList<String> employeeNames = new ArrayList<String>();
+        for (Employee employee : this.employees) {
+            employeeNames.add(employee.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                MainActivity.this,
                 android.R.layout.simple_spinner_item,
-                this.employees
+                employeeNames
         );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
