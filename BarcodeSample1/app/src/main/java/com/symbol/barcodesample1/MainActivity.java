@@ -832,7 +832,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 return null;
                             }
 
-                            if (!responseBody.has("backup")) {
+                            if (!responseBody.has("activos")) {
                                 textViewLoginStatus.setText(R.string.sync_error_text);
                                 textViewLoginStatus.setVisibility(View.VISIBLE);
                                 return null;
