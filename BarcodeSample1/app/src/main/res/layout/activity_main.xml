@@ -6,182 +6,271 @@
     android:layout_height="match_parent"
     tools:context="com.symbol.barcodesample1.MainActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/userNameLabel"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_name_label_text"
-            android:labelFor="@+id/userName"/>
+            android:orientation="vertical"
+            android:padding="5dp">
 
-        <EditText
-            android:id="@+id/userName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textAutoComplete"
-            android:autofillHints=""/>
+            <TextView
+                android:id="@+id/userNameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_name_label_text"
+                android:labelFor="@+id/userName"/>
 
-        <TextView
-            android:id="@+id/passwordLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/password_label_text"
-            android:labelFor="@+id/password"/>
+            <EditText
+                android:id="@+id/userName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                android:autofillHints=""/>
 
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:autofillHints=""/>
+            <TextView
+                android:id="@+id/passwordLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/password_label_text"
+                android:labelFor="@+id/password"/>
 
-        <Button
-            android:id="@+id/loginButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login_button_text"
-            android:onClick="login"/>
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:autofillHints=""/>
 
-        <Button
-            android:id="@+id/logOutButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/logout_button_text"
-            android:onClick="logOut"/>
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_button_text"
+                android:onClick="login"/>
 
-        <TextView
-            android:id="@+id/loginProgress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/login_progress_signing_in_text"
-            android:visibility="gone"/>
+            <Button
+                android:id="@+id/logOutButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/logout_button_text"
+                android:onClick="logOut"/>
 
-        <Button
-            android:id="@+id/syncWithServerButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/sync_with_serever_button_text"
-            android:onClick="syncWithServer"/>
+            <TextView
+                android:id="@+id/loginProgress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/login_progress_signing_in_text"
+                android:visibility="gone"/>
 
-<!--        <TextView-->
-<!--            android:id="@+id/textViewSS"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/select_scanner" />-->
+            <Button
+                android:id="@+id/syncWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_with_server_button_text"
+                android:onClick="syncWithServer"/>
 
-<!--        <TableLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+            <Button
+                android:id="@+id/syncEmployeesWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_employees"
+                android:onClick="getEmployees"/>
 
-<!--            <TableRow-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent" >-->
+            <Button
+                android:id="@+id/syncBuildingsWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_buildings"
+                android:onClick="getBuildings"/>
 
-<!--                <Spinner-->
-<!--                    android:id="@+id/spinnerScannerDevices"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1" />-->
-<!--            </TableRow>-->
+            <Spinner
+                android:id="@+id/employeeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-<!--        </TableLayout>-->
+            <Spinner
+                android:id="@+id/buildingSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/textViewSD"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Select Decoders:" />-->
+            <Button
+                android:id="@+id/startValidationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/new_validation_button_text"
+                android:visibility="gone"
+                android:onClick="startValidation" />
 
-<!--        <TableLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+            <Button
+                android:id="@+id/closeValidationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/close_validation_button_text"
+                android:onClick="closeValidation"
+                android:visibility="gone" />
 
-<!--            <TableRow-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent">-->
+            <Button
+                android:id="@+id/sendValidationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/send_validation_button_text"
+                android:onClick="sendValidation"
+                android:visibility="gone" />
 
-<!--                <CheckBox-->
-<!--                    android:id="@+id/checkBoxEAN8"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:checked="true"-->
-<!--                    android:text="EAN8" />-->
+            <TableLayout
+                android:id="@+id/scannedAssetsTable"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-<!--                <CheckBox-->
-<!--                    android:id="@+id/checkBoxEAN13"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:checked="true"-->
-<!--                    android:text="EAN13" />-->
-<!--            </TableRow>-->
+                <TableRow
+                    android:id="@+id/scannedAssetsTableHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent">
 
-<!--            <TableRow-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent">-->
+                    <TextView
+                        android:id="@+id/assetNumberHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/asset_number_header_text" />
 
-<!--                <CheckBox-->
-<!--                    android:id="@+id/checkBoxCode39"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:checked="true"-->
-<!--                    android:text="Code39" />-->
+                    <TextView
+                        android:id="@+id/assetDescriptionHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/asset_description_header_text"/>
+                </TableRow>
 
-<!--                <CheckBox-->
-<!--                    android:id="@+id/checkBoxCode128"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:checked="true"-->
-<!--                    android:text="Code128" />-->
-<!--            </TableRow>-->
+            </TableLayout>
 
-<!--        </TableLayout>-->
+            <TextView
+                android:id="@+id/textViewSS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_scanner"
+                android:visibility="gone"/>
 
-<!--        <Button-->
-<!--            android:id="@+id/buttonScan"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:onClick="softScan"-->
-<!--            android:text="Scan" />-->
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" >
 
-<!--        <TextView-->
-<!--            android:id="@+id/textViewS"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Status:" />-->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
 
-<!--        <TextView-->
-<!--            android:id="@+id/textViewStatus"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content" />-->
+                    <Spinner
+                        android:id="@+id/spinnerScannerDevices"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
 
-<!--        <TextView-->
-<!--            android:id="@+id/textViewD"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Data:" />-->
+            </TableLayout>
 
-<!--        <ScrollView-->
-<!--            android:id="@+id/scrollViewData"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+            <TextView
+                android:id="@+id/textViewSD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Decoders:"
+                android:visibility="gone" />
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
-<!--                <TextView-->
-<!--                    android:id="@+id/textViewData"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content" />-->
-<!--            </LinearLayout>-->
-<!--        </ScrollView>-->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-    </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/checkBoxEAN8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="EAN8" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxEAN13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="EAN13" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <CheckBox
+                        android:id="@+id/checkBoxCode39"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Code39" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxCode128"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Code128" />
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/buttonScan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="softScan"
+                android:text="Scan"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textViewS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status:"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textViewStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textViewD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data:"
+                android:visibility="gone" />
+
+            <ScrollView
+                android:id="@+id/scrollViewData"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textViewData"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
