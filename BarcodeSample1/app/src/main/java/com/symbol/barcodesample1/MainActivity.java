@@ -541,8 +541,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 );
                             }
 
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Employees: " + employees.length(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
                             setEmployees(employeesArray);
-                            dbHandler.addEmployees(employeesArray);
+//                            dbHandler.addEmployees(employeesArray);
                             setEmployeesToSpinner();
 
                         } catch (JSONException e) {
