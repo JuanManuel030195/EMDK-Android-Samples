@@ -42,5 +42,6 @@
     <string name="confronta_f_sica_termianda">Confronta Terminada</string>
     <string name="confrontas_f_sicas_pendientes">Confrontas Físicas anteriores</string>
     <string name="confronta_f_sica_pendiente">Confronta Física anterior</string>
+    <string name="synced_with_server">Synced with server!</string>
 
 </resources>
