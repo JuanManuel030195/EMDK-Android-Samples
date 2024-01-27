@@ -4,9 +4,9 @@ public class Asset {
     private final String number;
     private final String description;
     private final String buildingName;
-    private final String buildingId;
+    private final int buildingId;
 
-    public Asset(String number, String description, String buildingName, String buildingId) {
+    public Asset(String number, String description, String buildingName, int buildingId) {
         this.number = number;
         this.description = description;
         this.buildingName = buildingName;
@@ -25,7 +25,7 @@ public class Asset {
         return buildingName;
     }
 
-    public String getBuildingId() {
+    public int getBuildingId() {
         return buildingId;
     }
 }

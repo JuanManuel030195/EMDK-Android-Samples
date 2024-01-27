@@ -156,7 +156,7 @@ public class DBHandler extends SQLiteOpenHelper {
             String number = cursor.getString(cursor.getColumnIndex(ASSETS_NUMBER_COL));
             String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
             String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
-            String buildingId = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
+            int buildingId = cursor.getInt(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
             assets[i] = new Asset(number, description, buildingName, buildingId);
             i++;
         }
@@ -191,7 +191,7 @@ public class DBHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
             String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
-            String buildingId = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
+            int buildingId = cursor.getInt(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
             asset = new Asset(number, description, buildingName, buildingId);
         }
         cursor.close();
@@ -214,12 +214,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public void clearAssets() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + ASSETS_TABLE_NAME);
-        db.close();
-    }
-
-    public void executeQuery(String query) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(query);
         db.close();
     }
 

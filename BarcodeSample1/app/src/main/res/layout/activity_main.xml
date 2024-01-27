@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/sync_with_server_button_text"
-                android:onClick="syncWithServer"/>
+                android:onClick="getAssets"/>
 
             <Button
                 android:id="@+id/syncEmployeesWithServerButton"

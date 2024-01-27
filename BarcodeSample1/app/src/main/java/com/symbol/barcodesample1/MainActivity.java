@@ -31,10 +31,8 @@ import com.symbol.emdk.barcode.Scanner.TriggerType;
 import com.symbol.emdk.barcode.StatusData.ScannerStates;
 import com.symbol.emdk.barcode.StatusData;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
@@ -505,6 +503,97 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         this.assets = assets;
     }
 
+    public void getAssets(View view) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Fbackup";
+        try {
+            postRequest(
+                    endPoint,
+                    requestBody,
+                    (IOException e) -> {
+                        textViewLoginStatus.setText(R.string.sync_error_text);
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    },
+                    (JSONObject responseBody) -> {
+                        try {
+                            if (
+                                    !responseBody.has("success") ||
+                                            !responseBody.getBoolean("success")
+                            ) {
+                                textViewLoginStatus.setText(R.string.sync_error_text);
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                                return null;
+                            }
+
+                            if (!responseBody.has("activos")) {
+                                textViewLoginStatus.setText(R.string.sync_error_text);
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                                return null;
+                            }
+
+                            String backup = responseBody.getString("activos");
+                            textViewLoginStatus.setText(backup.substring(0, 500));
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+
+                            textViewLoginStatus.setVisibility(View.GONE);
+
+                            JSONArray assets = responseBody.getJSONArray("activos");
+                            Asset[] assetsArray = new Asset[assets.length()];
+                            for (int i = 0; i < assets.length(); i++) {
+
+                                JSONObject asset = assets.getJSONObject(i);
+                                assetsArray[i] = new Asset(
+                                        asset.getString("numeroSAP"),
+                                        asset.getString("descripcion"),
+                                        asset.getString("edificio"),
+                                        asset.getInt("idEdificio")
+                                );
+
+                            }
+
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Assets: " + assets.length(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            dbHandler.clearAssets();
+                            dbHandler.addAssets(assetsArray);
+                            setAssets(assetsArray);
+
+                            return null;
+                        } catch (JSONException e) {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                            return null;
+                        }
+                    },
+                    (JSONException e) -> {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void setEmployees(Employee[] employees) {
         this.employees = employees;
     }
@@ -566,8 +655,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             ).show();
 
                             dbHandler.clearEmployees();
-                            setEmployees(employeesArray);
                             dbHandler.addEmployees(employeesArray);
+                            setEmployees(employeesArray);
                             setEmployeesToSpinner();
 
                         } catch (JSONException e) {
@@ -665,8 +754,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             ).show();
 
                             dbHandler.clearBuildings();
-                            setBuildings(buildingsArray);
                             dbHandler.addBuildings(buildingsArray);
+                            setBuildings(buildingsArray);
                             setBuildingsToSpinner();
 
                         } catch (JSONException e) {
@@ -794,79 +883,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             System.out.println(e.getMessage());
         }
 
-    }
-
-    public void syncWithServer(View view) {
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
-        textViewLoginStatus.setVisibility(View.VISIBLE);
-
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("numeroEmpleado", this.username);
-            requestBody.put("password", this.password);
-        } catch (JSONException e) {
-            textViewLoginStatus.setText(R.string.sync_error_text);
-            System.out.println(e.getMessage());
-            return;
-        }
-
-        String endPoint = "index.php?r=auth%2Fbackup";
-        try {
-            postRequest(
-                    endPoint,
-                    requestBody,
-                    (IOException e) -> {
-                        textViewLoginStatus.setText(R.string.sync_error_text);
-                        textViewLoginStatus.setVisibility(View.VISIBLE);
-                        return null;
-                    },
-                    (JSONObject responseBody) -> {
-                        try {
-                            if (
-                                !responseBody.has("success") ||
-                                !responseBody.getBoolean("success")
-                            ) {
-                                textViewLoginStatus.setText(R.string.sync_error_text);
-                                textViewLoginStatus.setVisibility(View.VISIBLE);
-                                return null;
-                            }
-
-                            if (!responseBody.has("activos")) {
-                                textViewLoginStatus.setText(R.string.sync_error_text);
-                                textViewLoginStatus.setVisibility(View.VISIBLE);
-                                return null;
-                            }
-
-                            String backup = responseBody.getString("activos");
-                            textViewLoginStatus.setText(backup.substring(0, 500));
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
-
-//                            setEmployees(dbHandler.getEmployees());
-//                            setEmployeesToSpinner();
-//
-//                            setBuildings(dbHandler.getBuildings());
-//                            setBuildingsToSpinner();
-//
-//                            setAssets(dbHandler.getAssets());
-
-                            return null;
-                        } catch (JSONException e) {
-                            textViewLoginStatus.setText(e.getMessage());
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
-                            return null;
-                        }
-                    },
-                    (JSONException e) -> {
-                        textViewLoginStatus.setText(e.getMessage());
-                        textViewLoginStatus.setVisibility(View.VISIBLE);
-                        return null;
-                    }
-            );
-        } catch (IOException e) {
-            textViewLoginStatus.setText(R.string.sync_error_text);
-            System.out.println(e.getMessage());
-        }
     }
 
     public String saveStringToFile(String fileName, String string) throws IOException {
