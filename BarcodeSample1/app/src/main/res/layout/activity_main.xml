@@ -47,12 +47,26 @@
             android:text="@string/login_button_text"
             android:onClick="login"/>
 
+        <Button
+            android:id="@+id/logOutButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/logout_button_text"
+            android:onClick="logOut"/>
+
         <TextView
             android:id="@+id/loginProgress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/login_progress_signing_in_text"
             android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/syncWithServerButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/sync_with_serever_button_text"
+            android:onClick="syncWithServer"/>
 
 <!--        <TextView-->
 <!--            android:id="@+id/textViewSS"-->
