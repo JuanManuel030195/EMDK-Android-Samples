@@ -811,7 +811,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             return;
         }
 
-        String endPoint = "index.php?r=auth%2Fdump";
+        String endPoint = "index.php?r=auth%2Fbackup";
         try {
             postRequest(
                     endPoint,
