@@ -4,7 +4,14 @@
  */
 package com.symbol.barcodesample1;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +37,10 @@ import com.symbol.emdk.barcode.Scanner.TriggerType;
 import com.symbol.emdk.barcode.StatusData.ScannerStates;
 import com.symbol.emdk.barcode.StatusData;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
@@ -835,7 +845,21 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             }
 
                             String backup = responseBody.getString("backup");
-                            dbHandler.executeQuery(backup);
+                            String fileName = "backup.sql";
+                            String filePath = saveStringToFile(fileName, backup);
+
+                            File file = new File(filePath);
+                            if (!file.exists()) {
+                                textViewLoginStatus.setText(R.string.sync_error_text);
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                                return null;
+                            }
+
+                            String content = readFileAsString(file);
+
+
+                            textViewLoginStatus.setText(content.substring(0, 100));
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
 
 //                            setEmployees(dbHandler.getEmployees());
 //                            setEmployeesToSpinner();
@@ -845,11 +869,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 //
 //                            setAssets(dbHandler.getAssets());
 
-                            textViewLoginStatus.setText(R.string.synced_with_server);
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
-
                             return null;
-                        } catch (JSONException e) {
+                        } catch (JSONException | IOException e) {
                             textViewLoginStatus.setText(e.getMessage());
                             textViewLoginStatus.setVisibility(View.VISIBLE);
                             return null;
@@ -865,6 +886,32 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
         }
+    }
+
+    public String readFileAsString(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = bis.read(buffer)) != -1) {
+            bos.write(buffer, 0, bytesRead);
+        }
+        return bos.toString();
+    }
+
+    public String saveStringToFile(String fileName, String string) throws IOException {
+        FileOutputStream fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+        fileOutputStream.write(string.getBytes());
+        fileOutputStream.close();
+
+        String filePath = getFilesDir().getAbsolutePath() + "/" + fileName;
+
+        // add execute permission to the file
+        String[] command = {"chmod", "700", filePath};
+        Runtime.getRuntime().exec(command);
+
+        return filePath;
     }
 
     public void startValidation(View view) {
