@@ -818,14 +818,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         return null;
                     },
                     (JSONObject responseBody) -> {
-//                        textViewLoginStatus.setVisibility(View.VISIBLE);
-//                        textViewLoginStatus.setText(responseBody.toString());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        textViewLoginStatus.setText(responseBody.toString());
 
-                        Toast.makeText(
-                                MainActivity.this,
-                                responseBody.toString(),
-                                Toast.LENGTH_LONG
-                        ).show();
+//                        Toast.makeText(
+//                                MainActivity.this,
+//                                responseBody.toString(),
+//                                Toast.LENGTH_LONG
+//                        ).show();
 
                         return null;
                     },
