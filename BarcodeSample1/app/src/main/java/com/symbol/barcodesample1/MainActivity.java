@@ -632,10 +632,18 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             Building[] buildingsArray = new Building[buildings.length()];
                             for (int i = 0; i < buildings.length(); i++) {
                                 JSONObject building = buildings.getJSONObject(i);
+
+                                String buildingNumber;
+                                try {
+                                    buildingNumber = building.getString("numero");
+                                } catch (NumberFormatException e) {
+                                    buildingNumber = "";
+                                }
+
                                 buildingsArray[i] = new Building(
                                         building.getInt("idEdificio"),
                                         building.getString("nombre"),
-                                        building.getString("numero")
+                                        buildingNumber
                                 );
                             }
 
