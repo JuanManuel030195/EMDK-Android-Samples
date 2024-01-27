@@ -47,8 +47,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.content.pm.ActivityInfo;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,10 +90,17 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private boolean bExtScannerDisconnected = false;
     private final Object lock = new Object();
 
+    private DBHandler dbHandler;
+
     private final MediaType jsonMediaType = MediaType.parse("application/json; charset=utf-8");
     private final String baseUrl = "http://cda.ceaqueretaro.gob.mx/";
+
     private String username = "";
     private String password = "";
+
+    private Employee[] employees = new Employee[0];
+    private Building[] buildings = new Building[0];
+    private Asset[] assets = new Asset[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +110,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setDefaultOrientation();
+
+        dbHandler = new DBHandler(MainActivity.this);
+        setBuildings(dbHandler.getBuildings());
+        setEmployees(dbHandler.getEmployees());
+        setAssets(dbHandler.getAssets());
 
 //        textViewData = (TextView)findViewById(R.id.textViewData);
 //        textViewStatus = (TextView)findViewById(R.id.textViewStatus);
@@ -403,6 +417,209 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    public void setAssets(Asset[] assets) {
+        this.assets = assets;
+    }
+
+    public void setEmployees(Employee[] employees) {
+        this.employees = employees;
+    }
+
+    public void getEmployees(View view) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Fempleados";
+        try {
+            postRequest(
+                    endPoint,
+                    requestBody,
+                    (IOException e) -> {
+                        onPostFailed(e);
+                        return null;
+                    },
+                    (JSONObject responseBody) -> {
+                        try {
+                            if (
+                                !responseBody.has("success") ||
+                                !responseBody.getBoolean("success")
+                            ) {
+                                return null;
+                            }
+
+                            if (!responseBody.has("employees")) {
+                                return null;
+                            }
+
+                            JSONArray employees = responseBody.getJSONArray("employees");
+                            Employee[] employeesArray = new Employee[employees.length()];
+                            for (int i = 0; i < employees.length(); i++) {
+                                JSONObject employee = employees.getJSONObject(i);
+                                employeesArray[i] = new Employee(
+                                        employee.getString("numeroEmpleado"),
+                                        employee.getString("nombre"),
+                                        employee.getInt("nivel")
+                                );
+                            }
+
+                            setEmployees(employeesArray);
+                            dbHandler.addEmployees(employeesArray);
+
+                        } catch (JSONException e) {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+
+                        return null;
+                    },
+                    (JSONException e) -> {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void setBuildings(Building[] buildings) {
+        this.buildings = buildings;
+    }
+
+    public void getBuildings(View view) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Fedificios";
+        try {
+            postRequest(
+                    endPoint,
+                    requestBody,
+                    (IOException e) -> {
+                        onPostFailed(e);
+                        return null;
+                    },
+                    (JSONObject responseBody) -> {
+                        try {
+                            if (
+                                !responseBody.has("success") ||
+                                !responseBody.getBoolean("success")
+                            ) {
+                                return null;
+                            }
+
+                            if (!responseBody.has("buildings")) {
+                                return null;
+                            }
+
+                            JSONArray buildings = responseBody.getJSONArray("buildings");
+                            Building[] buildingsArray = new Building[buildings.length()];
+                            for (int i = 0; i < buildings.length(); i++) {
+                                JSONObject building = buildings.getJSONObject(i);
+                                buildingsArray[i] = new Building(
+                                        building.getInt("id"),
+                                        building.getString("nombre"),
+                                        building.getString("numero")
+                                );
+                            }
+
+                            setBuildings(buildingsArray);
+                            dbHandler.addBuildings(buildingsArray);
+
+                        } catch (JSONException e) {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+
+                        return null;
+                    },
+                    (JSONException e) -> {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void logOut(View view) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.login_progress_signing_in_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Flogout";
+        try {
+            postRequest(
+                endPoint,
+                requestBody,
+                (IOException e) -> {
+                    onPostFailed(e);
+                    return null;
+                },
+                (JSONObject responseBody) -> {
+                    try {
+                        if (
+                            responseBody.has("success") &&
+                            responseBody.getBoolean("success")
+                        ) {
+                            onLogOutSuccess(responseBody.toString());
+                        }
+                    } catch (JSONException e) {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                    }
+
+                    return null;
+                },
+                (JSONException e) -> {
+                    textViewLoginStatus.setText(e.getMessage());
+                    textViewLoginStatus.setVisibility(View.VISIBLE);
+                    return null;
+                }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void login(View view) {
         getUserName();
         getPassword();
@@ -458,20 +675,87 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     }
 
+    public void syncWithServer(View view) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Fdump";
+        try {
+            postRequest(
+                    endPoint,
+                    requestBody,
+                    (IOException e) -> {
+                        textViewLoginStatus.setText(R.string.sync_error_text);
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    },
+                    (JSONObject responseBody) -> {
+//                        textViewLoginStatus.setVisibility(View.VISIBLE);
+//                        textViewLoginStatus.setText(responseBody.toString());
+
+                        Toast.makeText(
+                                MainActivity.this,
+                                responseBody.toString(),
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        return null;
+                    },
+                    (JSONException e) -> {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void softScan(View view) {
         bSoftTriggerSelected = true;
         cancelRead();
     }
 
+    private void setLoginComponentsVisibility(int visibility) {
+        findViewById(R.id.userNameLabel).setVisibility(visibility);
+        findViewById(R.id.userName).setVisibility(visibility);
+        findViewById(R.id.passwordLabel).setVisibility(visibility);
+        findViewById(R.id.password).setVisibility(visibility);
+        findViewById(R.id.loginButton).setVisibility(visibility);
+    }
+
     private void onLoginSuccess(String info) {
-        findViewById(R.id.userNameLabel).setVisibility(View.GONE);
-        findViewById(R.id.userName).setVisibility(View.GONE);
-        findViewById(R.id.passwordLabel).setVisibility(View.GONE);
-        findViewById(R.id.password).setVisibility(View.GONE);
-        findViewById(R.id.loginButton).setVisibility(View.GONE);
+        setLoginComponentsVisibility(View.GONE);
 
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
         textViewLoginStatus.setText(info);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+    }
+
+    private void onLogOutSuccess(String info) {
+        setLoginComponentsVisibility(View.VISIBLE);
+
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(info);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+    }
+
+    private void onPostFailed(IOException e) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(e.getMessage());
         textViewLoginStatus.setVisibility(View.VISIBLE);
     }
 
