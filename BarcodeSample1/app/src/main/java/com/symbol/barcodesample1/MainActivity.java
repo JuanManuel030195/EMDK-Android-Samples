@@ -1105,11 +1105,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     final String responseBodyString = response.body().string();
+                    final JSONObject responseBody;
 
-                    JSONObject responseBody;
-                    if (responseBodyString.length() > 500) {
+                    if (isValidBackup(responseBodyString)) {
                         responseBody = new JSONObject();
-                        responseBody.put("sql", responseBodyString);
+                        responseBody.put("success", true);
+                        responseBody.put("backup", responseBodyString.substring(0, 100));
                     } else {
                         responseBody = new JSONObject(responseBodyString);
                     }
@@ -1130,6 +1131,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 }
             }
         });
+    }
+
+    private boolean isValidBackup(String sqlBackup) {
+        return sqlBackup.contains("CREATE TABLE") &&
+                sqlBackup.contains("INSERT INTO");
     }
 
     private void getUserName() {
