@@ -122,9 +122,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         dbHandler = new DBHandler(MainActivity.this);
 
-        dbHandler.clearEmployees();
-        dbHandler.clearBuildings();
-
         setEmployees(dbHandler.getEmployees());
         setEmployeesToSpinner();
 
@@ -208,10 +205,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     private void setBuildingsToSpinner() {
         Spinner spinner = (Spinner) findViewById(R.id.buildingSpinner);
-        ArrayAdapter<Building> adapter = new ArrayAdapter<Building>(
-                this,
+
+        ArrayList<String> buildingNames = new ArrayList<String>();
+        for (Building building : this.buildings) {
+            buildingNames.add(building.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                MainActivity.this,
                 android.R.layout.simple_spinner_item,
-                this.buildings
+                buildingNames
         );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -556,8 +559,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                     Toast.LENGTH_LONG
                             ).show();
 
+                            dbHandler.clearEmployees();
                             setEmployees(employeesArray);
-//                            dbHandler.addEmployees(employeesArray);
+                            dbHandler.addEmployees(employeesArray);
                             setEmployeesToSpinner();
 
                         } catch (JSONException e) {
@@ -631,6 +635,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 );
                             }
 
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Buildings: " + buildings.length(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            dbHandler.clearBuildings();
                             setBuildings(buildingsArray);
                             dbHandler.addBuildings(buildingsArray);
                             setBuildingsToSpinner();
