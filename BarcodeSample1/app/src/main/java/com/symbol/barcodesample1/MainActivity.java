@@ -837,11 +837,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             String backup = responseBody.getString("backup");
                             dbHandler.executeQuery(backup);
 
-                            Toast.makeText(
-                                    MainActivity.this,
-                                    "Synced with server",
-                                    Toast.LENGTH_LONG
-                            ).show();
+//                            setEmployees(dbHandler.getEmployees());
+//                            setEmployeesToSpinner();
+//
+//                            setBuildings(dbHandler.getBuildings());
+//                            setBuildingsToSpinner();
+//
+//                            setAssets(dbHandler.getAssets());
+
+                            textViewLoginStatus.setText(R.string.synced_with_server);
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
 
                             return null;
                         } catch (JSONException e) {
