@@ -4,14 +4,8 @@
  */
 package com.symbol.barcodesample1;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -844,21 +838,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 return null;
                             }
 
-                            String backup = responseBody.getString("backup");
-                            String fileName = "backup.sql";
-                            String filePath = saveStringToFile(fileName, backup);
-
-                            File file = new File(filePath);
-                            if (!file.exists()) {
-                                textViewLoginStatus.setText(R.string.sync_error_text);
-                                textViewLoginStatus.setVisibility(View.VISIBLE);
-                                return null;
-                            }
-
-                            String content = readFileAsString(file);
-
-
-                            textViewLoginStatus.setText(content.substring(0, 100));
+                            String backup = responseBody.getString("activos");
+                            textViewLoginStatus.setText(backup.substring(0, 100));
                             textViewLoginStatus.setVisibility(View.VISIBLE);
 
 //                            setEmployees(dbHandler.getEmployees());
@@ -870,7 +851,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 //                            setAssets(dbHandler.getAssets());
 
                             return null;
-                        } catch (JSONException | IOException e) {
+                        } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
                             textViewLoginStatus.setVisibility(View.VISIBLE);
                             return null;
@@ -886,18 +867,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
         }
-    }
-
-    public String readFileAsString(File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = bis.read(buffer)) != -1) {
-            bos.write(buffer, 0, bytesRead);
-        }
-        return bos.toString();
     }
 
     public String saveStringToFile(String fileName, String string) throws IOException {
@@ -1178,15 +1147,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     final String responseBodyString = response.body().string();
-                    final JSONObject responseBody;
-
-                    if (isValidBackup(responseBodyString)) {
-                        responseBody = new JSONObject();
-                        responseBody.put("success", true);
-                        responseBody.put("backup", responseBodyString.substring(0, 100));
-                    } else {
-                        responseBody = new JSONObject(responseBodyString);
-                    }
+                    final JSONObject responseBody = new JSONObject(responseBodyString);
 
                     runOnUiThread(new Runnable() {
                         @Override
