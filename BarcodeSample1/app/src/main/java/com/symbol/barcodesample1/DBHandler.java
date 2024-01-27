@@ -217,6 +217,12 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void executeQuery(String query) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(query);
+        db.close();
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS employees");
