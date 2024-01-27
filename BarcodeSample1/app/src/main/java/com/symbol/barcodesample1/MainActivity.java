@@ -839,7 +839,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             }
 
                             String backup = responseBody.getString("activos");
-                            textViewLoginStatus.setText(backup.substring(0, 100));
+                            textViewLoginStatus.setText(backup.substring(0, 500));
                             textViewLoginStatus.setVisibility(View.VISIBLE);
 
 //                            setEmployees(dbHandler.getEmployees());
