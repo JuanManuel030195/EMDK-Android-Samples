@@ -977,7 +977,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 scannedAssetsTable.setVisibility(View.GONE);
                 break;
             case LOGGED_IN:
-                String userNameLabelText = R.string.hola + this.username + "!";
+                String userNameLabelText = dbHandler.getEmployeeByNumber(this.username).getName();
                 userNameLabel.setText(userNameLabelText);
                 userNameLabel.setVisibility(View.VISIBLE);
                 userNameEditText.setText("");

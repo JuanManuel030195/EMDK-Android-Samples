@@ -13,7 +13,7 @@
     <string name="login_progress_signing_out_text">Cerrando Sesion…</string>
 
     <string name="sync_with_server_label_text">Sincronizar datos con el servidor</string>
-    <string name="sync_with_server_button_text">Sincronizar</string>
+    <string name="sync_with_server_button_text">Obtener Activos</string>
     <string name="sync_with_server_progress_text">Obteniendo informacion…</string>
     <string name="sync_error_text">Error al sincronizar</string>
     <string name="sync_success">Sincronizacion exitosa</string>
@@ -35,8 +35,8 @@
     <string name="assets_summary_label_text">Resumen de activos:</string>
     <string name="asset_number_header_text">Num. SAP</string>
     <string name="asset_description_header_text">Descripción</string>
-    <string name="sync_employees">Sync Employees</string>
-    <string name="sync_buildings">Sync Buildings</string>
+    <string name="sync_employees">Obtener Empleados</string>
+    <string name="sync_buildings">Obtener Edificios</string>
     <string name="confronta_f_sica_en_proceso">Confronta Física en proceso</string>
     <string name="hola">"Hola, "</string>
     <string name="confronta_f_sica_termianda">Confronta Terminada</string>
