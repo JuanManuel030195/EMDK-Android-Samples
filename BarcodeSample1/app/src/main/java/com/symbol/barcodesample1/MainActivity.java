@@ -13,6 +13,7 @@ import java.util.function.Function;
 import com.symbol.emdk.EMDKManager;
 import com.symbol.emdk.EMDKManager.EMDKListener;
 import com.symbol.emdk.EMDKManager.FEATURE_TYPE;
+import com.symbol.emdk.EMDKResults;
 import com.symbol.emdk.barcode.BarcodeManager;
 import com.symbol.emdk.barcode.BarcodeManager.ConnectionState;
 import com.symbol.emdk.barcode.BarcodeManager.ScannerConnectionListener;
@@ -32,18 +33,22 @@ import com.symbol.emdk.barcode.StatusData;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.content.pm.ActivityInfo;
@@ -102,9 +107,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private Building[] buildings = new Building[0];
     private Asset[] assets = new Asset[0];
 
+    private LocalValidation currentValidation = null;
+
+    private AppState appState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        appState = AppState.NOT_LOGGED_IN;
+        updateVisualComponentsBasedOnAppState(appState);
 
         deviceList = new ArrayList<ScannerInfo>();
 
@@ -112,33 +124,89 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         setDefaultOrientation();
 
         dbHandler = new DBHandler(MainActivity.this);
-        setBuildings(dbHandler.getBuildings());
+
         setEmployees(dbHandler.getEmployees());
+        setEmployeesToSpinner();
+
+        setBuildings(dbHandler.getBuildings());
+        setBuildingsToSpinner();
+
         setAssets(dbHandler.getAssets());
 
-//        textViewData = (TextView)findViewById(R.id.textViewData);
-//        textViewStatus = (TextView)findViewById(R.id.textViewStatus);
-//        checkBoxEAN8 = (CheckBox)findViewById(R.id.checkBoxEAN8);
-//        checkBoxEAN13 = (CheckBox)findViewById(R.id.checkBoxEAN13);
-//        checkBoxCode39 = (CheckBox)findViewById(R.id.checkBoxCode39);
-//        checkBoxCode128 = (CheckBox)findViewById(R.id.checkBoxCode128);
-//        spinnerScannerDevices = (Spinner)findViewById(R.id.spinnerScannerDevices);
-//
-//        EMDKResults results = EMDKManager.getEMDKManager(getApplicationContext(), this);
-//        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-//            updateStatus("EMDKManager object request failed!");
-//            return;
-//        }
-//
-//        checkBoxEAN8.setOnCheckedChangeListener(this);
-//        checkBoxEAN13.setOnCheckedChangeListener(this);
-//        checkBoxCode39.setOnCheckedChangeListener(this);
-//        checkBoxCode128.setOnCheckedChangeListener(this);
-//
-//        addSpinnerScannerDevicesListener();
-//
-//        textViewData.setSelected(true);
-//        textViewData.setMovementMethod(new ScrollingMovementMethod());
+        textViewData = (TextView)findViewById(R.id.textViewData);
+        textViewStatus = (TextView)findViewById(R.id.textViewStatus);
+        checkBoxEAN8 = (CheckBox)findViewById(R.id.checkBoxEAN8);
+        checkBoxEAN13 = (CheckBox)findViewById(R.id.checkBoxEAN13);
+        checkBoxCode39 = (CheckBox)findViewById(R.id.checkBoxCode39);
+        checkBoxCode128 = (CheckBox)findViewById(R.id.checkBoxCode128);
+        spinnerScannerDevices = (Spinner)findViewById(R.id.spinnerScannerDevices);
+
+        EMDKResults results = EMDKManager.getEMDKManager(getApplicationContext(), this);
+        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
+            updateStatus("EMDKManager object request failed!");
+            return;
+        }
+
+        checkBoxEAN8.setOnCheckedChangeListener(this);
+        checkBoxEAN13.setOnCheckedChangeListener(this);
+        checkBoxCode39.setOnCheckedChangeListener(this);
+        checkBoxCode128.setOnCheckedChangeListener(this);
+
+        addSpinnerScannerDevicesListener();
+
+        textViewData.setSelected(true);
+        textViewData.setMovementMethod(new ScrollingMovementMethod());
+    }
+
+    private void addTableRowToTableLayout(Asset asset) {
+        TextView newAssetNumberTextView = new TextView(MainActivity.this);
+        newAssetNumberTextView.setText(asset.getNumber());
+
+        TextView newAssetDescriptionTextView = new TextView(MainActivity.this);
+        newAssetDescriptionTextView.setText(asset.getDescription());
+
+        TableRow newTableRow = new TableRow(MainActivity.this);
+        newTableRow.addView(newAssetNumberTextView);
+        newTableRow.addView(newAssetDescriptionTextView);
+
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
+        tableLayout.addView(newTableRow);
+    }
+
+    private void removeTableRowFromTableLayout(Asset asset) {
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
+        for (int i = 0; i < tableLayout.getChildCount(); i++) {
+            TableRow tableRow = (TableRow) tableLayout.getChildAt(i);
+            TextView assetNumberTextView = (TextView) tableRow.getChildAt(0);
+            if (assetNumberTextView.getText().toString().equals(asset.getNumber())) {
+                tableLayout.removeView(tableRow);
+                break;
+            }
+        }
+    }
+
+    private void setEmployeesToSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.employeeSpinner);
+        ArrayAdapter<Employee> adapter = new ArrayAdapter<Employee>(
+                this,
+                android.R.layout.simple_spinner_item,
+                this.employees
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+    private void setBuildingsToSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.buildingSpinner);
+        ArrayAdapter<Building> adapter = new ArrayAdapter<Building>(
+                this,
+                android.R.layout.simple_spinner_item,
+                this.buildings
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     @Override
@@ -427,7 +495,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     public void getEmployees(View view) {
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
         JSONObject requestBody = new JSONObject();
@@ -475,6 +543,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                             setEmployees(employeesArray);
                             dbHandler.addEmployees(employeesArray);
+                            setEmployeesToSpinner();
 
                         } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
@@ -501,7 +570,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     public void getBuildings(View view) {
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
         JSONObject requestBody = new JSONObject();
@@ -541,7 +610,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             for (int i = 0; i < buildings.length(); i++) {
                                 JSONObject building = buildings.getJSONObject(i);
                                 buildingsArray[i] = new Building(
-                                        building.getInt("id"),
+                                        building.getInt("idEdificio"),
                                         building.getString("nombre"),
                                         building.getString("numero")
                                 );
@@ -549,6 +618,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                             setBuildings(buildingsArray);
                             dbHandler.addBuildings(buildingsArray);
+                            setBuildingsToSpinner();
 
                         } catch (JSONException e) {
                             textViewLoginStatus.setText(e.getMessage());
@@ -599,7 +669,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             responseBody.has("success") &&
                             responseBody.getBoolean("success")
                         ) {
-                            onLogOutSuccess(responseBody.toString());
+                            appState = AppState.NOT_LOGGED_IN;
+                            updateVisualComponentsBasedOnAppState(appState);
                         }
                     } catch (JSONException e) {
                         textViewLoginStatus.setText(e.getMessage());
@@ -653,7 +724,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             responseBody.has("success") &&
                             responseBody.getBoolean("success")
                         ) {
-                            onLoginSuccess(responseBody.toString());
+                            appState = AppState.LOGGED_IN;
+                            updateVisualComponentsBasedOnAppState(appState);
                         }
                     } catch (JSONException e) {
                         textViewLoginStatus.setText(e.getMessage());
@@ -677,7 +749,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     public void syncWithServer(View view) {
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(R.string.sync_with_serever_progress_text);
+        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
         JSONObject requestBody = new JSONObject();
@@ -724,33 +796,196 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    public void startValidation(View view) {
+        appState = AppState.VALIDATION_STARTED;
+        updateVisualComponentsBasedOnAppState(appState);
+
+        Spinner employeeSpinner = (Spinner) findViewById(R.id.employeeSpinner);
+        Employee employee = (Employee) employeeSpinner.getSelectedItem();
+
+        Spinner buildingSpinner = (Spinner) findViewById(R.id.buildingSpinner);
+        Building building = (Building) buildingSpinner.getSelectedItem();
+
+        LocalValidation localValidation = new LocalValidation(
+                employee.getNumber(),
+                building.getName()
+        );
+
+        int id = (int) dbHandler.addValidation(localValidation);
+        localValidation.setId(id);
+
+        this.currentValidation = localValidation;
+    }
+
+    public void closeValidation(View view) {
+        appState = AppState.VALIDATION_ENDED;
+        updateVisualComponentsBasedOnAppState(appState);
+    }
+
+    public void sendValidation(View view) {
+        appState = AppState.ON_OLD_VALIDATIONS;
+        updateVisualComponentsBasedOnAppState(appState);
+    }
+
+    private void updateVisualComponentsBasedOnAppState(AppState state) {
+        TextView userNameLabel = (TextView) findViewById(R.id.userNameLabel);
+        EditText userNameEditText = (EditText) findViewById(R.id.userName);
+        TextView passwordLabel = (TextView) findViewById(R.id.passwordLabel);
+        EditText passwordEditText = (EditText) findViewById(R.id.password);
+        Button loginButton = (Button) findViewById(R.id.loginButton);
+
+        Button syncWithServerButton = (Button) findViewById(R.id.syncWithServerButton);
+        Button getEmployeesButton = (Button) findViewById(R.id.syncEmployeesWithServerButton);
+        Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
+
+        Spinner employeeSpinner = (Spinner) findViewById(R.id.employeeSpinner);
+        Spinner buildingSpinner = (Spinner) findViewById(R.id.buildingSpinner);
+
+        Button startValidationButton = (Button) findViewById(R.id.startValidationButton);
+        Button closeValidationButton = (Button) findViewById(R.id.closeValidationButton);
+        Button sendValidationButton = (Button) findViewById(R.id.sendValidationButton);
+
+        TableLayout scannedAssetsTable = (TableLayout) findViewById(R.id.scannedAssetsTable);
+
+        switch (state) {
+            case NOT_LOGGED_IN:
+                userNameLabel.setText(R.string.user_name_label_text);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setVisibility(View.VISIBLE);
+                passwordLabel.setText(R.string.password_label_text);
+                passwordLabel.setVisibility(View.VISIBLE);
+                passwordEditText.setVisibility(View.VISIBLE);
+                loginButton.setText(R.string.login_button_text);
+                loginButton.setVisibility(View.VISIBLE);
+
+                syncWithServerButton.setVisibility(View.GONE);
+                getEmployeesButton.setVisibility(View.GONE);
+                getBuildingsButton.setVisibility(View.GONE);
+
+                employeeSpinner.setVisibility(View.GONE);
+                buildingSpinner.setVisibility(View.GONE);
+
+                startValidationButton.setVisibility(View.GONE);
+                closeValidationButton.setVisibility(View.GONE);
+                sendValidationButton.setVisibility(View.GONE);
+
+                scannedAssetsTable.removeAllViews();
+                scannedAssetsTable.setVisibility(View.GONE);
+                break;
+            case LOGGED_IN:
+                String userNameLabelText = R.string.hola + this.username + "!";
+                userNameLabel.setText(userNameLabelText);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setText("");
+                userNameEditText.setVisibility(View.GONE);
+                passwordLabel.setVisibility(View.GONE);
+                passwordEditText.setText("");
+                passwordEditText.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
+
+                syncWithServerButton.setVisibility(View.VISIBLE);
+                getEmployeesButton.setVisibility(View.VISIBLE);
+                getBuildingsButton.setVisibility(View.VISIBLE);
+
+                employeeSpinner.setVisibility(View.VISIBLE);
+                buildingSpinner.setVisibility(View.VISIBLE);
+
+                startValidationButton.setVisibility(View.VISIBLE);
+                closeValidationButton.setVisibility(View.GONE);
+                sendValidationButton.setVisibility(View.GONE);
+
+                scannedAssetsTable.setVisibility(View.GONE);
+                break;
+            case VALIDATION_STARTED:
+                userNameLabel.setText(R.string.confronta_f_sica_en_proceso);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setVisibility(View.GONE);
+                passwordLabel.setVisibility(View.GONE);
+                passwordEditText.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
+
+                syncWithServerButton.setVisibility(View.GONE);
+                getEmployeesButton.setVisibility(View.GONE);
+                getBuildingsButton.setVisibility(View.GONE);
+
+                employeeSpinner.setVisibility(View.GONE);
+                buildingSpinner.setVisibility(View.GONE);
+
+                startValidationButton.setVisibility(View.GONE);
+                closeValidationButton.setVisibility(View.VISIBLE);
+                sendValidationButton.setVisibility(View.GONE);
+
+                scannedAssetsTable.setVisibility(View.VISIBLE);
+                break;
+            case VALIDATION_ENDED:
+                userNameLabel.setText(R.string.confronta_f_sica_termianda);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setVisibility(View.GONE);
+                passwordLabel.setVisibility(View.GONE);
+                passwordEditText.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
+
+                syncWithServerButton.setVisibility(View.GONE);
+                getEmployeesButton.setVisibility(View.GONE);
+                getBuildingsButton.setVisibility(View.GONE);
+
+                employeeSpinner.setVisibility(View.GONE);
+                buildingSpinner.setVisibility(View.GONE);
+
+                startValidationButton.setVisibility(View.GONE);
+                closeValidationButton.setVisibility(View.GONE);
+                sendValidationButton.setVisibility(View.VISIBLE);
+
+                scannedAssetsTable.setVisibility(View.VISIBLE);
+                break;
+            case ON_OLD_VALIDATIONS:
+                userNameLabel.setText(R.string.confrontas_f_sicas_pendientes);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setVisibility(View.GONE);
+                passwordLabel.setVisibility(View.GONE);
+                passwordEditText.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
+
+                syncWithServerButton.setVisibility(View.GONE);
+                getEmployeesButton.setVisibility(View.GONE);
+                getBuildingsButton.setVisibility(View.GONE);
+
+                employeeSpinner.setVisibility(View.GONE);
+                buildingSpinner.setVisibility(View.GONE);
+
+                startValidationButton.setVisibility(View.GONE);
+                closeValidationButton.setVisibility(View.GONE);
+                sendValidationButton.setVisibility(View.GONE);
+
+                scannedAssetsTable.setVisibility(View.GONE);
+                break;
+            case ON_OLD_VALIDATION:
+                userNameLabel.setText(R.string.confronta_f_sica_pendiente);
+                userNameLabel.setVisibility(View.VISIBLE);
+                userNameEditText.setVisibility(View.GONE);
+                passwordLabel.setVisibility(View.GONE);
+                passwordEditText.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
+
+                syncWithServerButton.setVisibility(View.GONE);
+                getEmployeesButton.setVisibility(View.GONE);
+                getBuildingsButton.setVisibility(View.GONE);
+
+                employeeSpinner.setVisibility(View.GONE);
+                buildingSpinner.setVisibility(View.GONE);
+
+                startValidationButton.setVisibility(View.GONE);
+                closeValidationButton.setVisibility(View.GONE);
+                sendValidationButton.setVisibility(View.VISIBLE);
+
+                scannedAssetsTable.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
     public void softScan(View view) {
         bSoftTriggerSelected = true;
         cancelRead();
-    }
-
-    private void setLoginComponentsVisibility(int visibility) {
-        findViewById(R.id.userNameLabel).setVisibility(visibility);
-        findViewById(R.id.userName).setVisibility(visibility);
-        findViewById(R.id.passwordLabel).setVisibility(visibility);
-        findViewById(R.id.password).setVisibility(visibility);
-        findViewById(R.id.loginButton).setVisibility(visibility);
-    }
-
-    private void onLoginSuccess(String info) {
-        setLoginComponentsVisibility(View.GONE);
-
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(info);
-        textViewLoginStatus.setVisibility(View.VISIBLE);
-    }
-
-    private void onLogOutSuccess(String info) {
-        setLoginComponentsVisibility(View.VISIBLE);
-
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(info);
-        textViewLoginStatus.setVisibility(View.VISIBLE);
     }
 
     private void onPostFailed(IOException e) {
@@ -886,7 +1121,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         if(width > height){
-            setContentView(R.layout.activity_main_landscape);
+//            setContentView(R.layout.activity_main_landscape);
+            setContentView(R.layout.activity_main);
         } else {
             setContentView(R.layout.activity_main);
         }
