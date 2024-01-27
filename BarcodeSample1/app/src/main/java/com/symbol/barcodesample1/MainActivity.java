@@ -578,7 +578,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                         asset.getString("numeroSAP"),
                                         asset.getString("descripcion"),
                                         asset.getString("edificio"),
-                                        asset.getInt("idEdificio")
+                                        asset.isNull("idEdificio") ? 0 : asset.getInt("idEdificio")
                                 );
 
                             }
