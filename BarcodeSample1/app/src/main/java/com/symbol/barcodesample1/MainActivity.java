@@ -115,9 +115,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        appState = AppState.NOT_LOGGED_IN;
-        updateVisualComponentsBasedOnAppState(appState);
-
         deviceList = new ArrayList<ScannerInfo>();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -156,6 +153,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         textViewData.setSelected(true);
         textViewData.setMovementMethod(new ScrollingMovementMethod());
+
+        appState = AppState.NOT_LOGGED_IN;
+        updateVisualComponentsBasedOnAppState(appState);
     }
 
     private void addTableRowToTableLayout(Asset asset) {
