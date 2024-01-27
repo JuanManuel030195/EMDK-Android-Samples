@@ -545,10 +545,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                 return null;
                             }
 
-                            String backup = responseBody.getString("activos");
-                            textViewLoginStatus.setText(backup.substring(0, 500));
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
-
                             textViewLoginStatus.setVisibility(View.GONE);
 
                             JSONArray assets = responseBody.getJSONArray("activos");
