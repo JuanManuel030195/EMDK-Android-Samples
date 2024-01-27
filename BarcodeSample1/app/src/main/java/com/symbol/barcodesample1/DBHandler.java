@@ -28,6 +28,12 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String ASSETS_BUILDING_NAME_COL = "edificio";
     private static final String ASSETS_BUILDING_ID_COL = "idEdificio";
 
+    private static final String VALIDATIONS_TABLE_NAME = "validaciones";
+    private static final String VALIDATIONS_ID_COL = "id";
+    private static final String VALIDATIONS_DATE_COL = "date";
+    private static final String VALIDATIONS_EMPLOYEE_NUMBER_COL = "employeeNumber";
+    private static final String VALIDATIONS_SENT_STATE_COL = "sentState";
+
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -52,6 +58,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 ASSETS_BUILDING_NAME_COL + " TEXT, " +
                 ASSETS_BUILDING_ID_COL + " INTEGER)";
         db.execSQL(createAssetsTable);
+
+        String createValidationsTable = "CREATE TABLE " + VALIDATIONS_TABLE_NAME + " (" +
+                VALIDATIONS_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                VALIDATIONS_DATE_COL + " DATETIME, " +
+                VALIDATIONS_EMPLOYEE_NUMBER_COL + " TEXT, " +
+                VALIDATIONS_SENT_STATE_COL + " INTEGER)";
+        db.execSQL(createValidationsTable);
     }
 
     public void addEmployee(@NotNull Employee employee) {
@@ -83,6 +96,18 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(ASSETS_BUILDING_ID_COL, asset.getBuildingId());
         db.insert(ASSETS_TABLE_NAME, null, values);
         db.close();
+    }
+
+    public long addValidation(@NotNull LocalValidation validation) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(VALIDATIONS_DATE_COL, validation.getDate().toString());
+        values.put(VALIDATIONS_EMPLOYEE_NUMBER_COL, validation.getEmployeeNumber());
+        values.put(VALIDATIONS_SENT_STATE_COL, validation.getSentState().ordinal());
+        long newRowId = db.insert(VALIDATIONS_TABLE_NAME, null, values);
+        db.close();
+
+        return newRowId;
     }
 
     public Employee[] getEmployees() {
@@ -156,6 +181,22 @@ public class DBHandler extends SQLiteOpenHelper {
         for (Asset asset : assets) {
             addAsset(asset);
         }
+    }
+
+    public Asset getAssetByNumber(String number) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + ASSETS_TABLE_NAME + " WHERE " + ASSETS_NUMBER_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{number});
+        Asset asset = null;
+        if (cursor.moveToFirst()) {
+            String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
+            String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
+            String buildingId = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
+            asset = new Asset(number, description, buildingName, buildingId);
+        }
+        cursor.close();
+        db.close();
+        return asset;
     }
 
     @Override
