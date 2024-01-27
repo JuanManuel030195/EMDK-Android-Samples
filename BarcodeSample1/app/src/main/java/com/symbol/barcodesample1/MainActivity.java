@@ -647,7 +647,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                                 buildingsArray[i] = new Building(
                                         building.getInt("idEdificio"),
-                                        building.getString("nombre"),
+                                        building.getString("nombre").length() > 0
+                                            ? building.getString("nombre")
+                                            : "Edificio sin nombre",
                                         buildingNuber
                                 );
                             }
