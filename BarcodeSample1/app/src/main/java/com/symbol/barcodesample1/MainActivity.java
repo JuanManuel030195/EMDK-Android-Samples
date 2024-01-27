@@ -1105,19 +1105,19 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     final String responseBodyString = response.body().string();
-                    JSONObject responseBody = new JSONObject(responseBodyString);
+
+                    JSONObject responseBody;
+                    if (responseBodyString.length() > 500) {
+                        responseBody = new JSONObject();
+                        responseBody.put("sql", responseBodyString);
+                    } else {
+                        responseBody = new JSONObject(responseBodyString);
+                    }
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final boolean isSqlBackup = endPoint.equals("index.php?r=auth%2Fdump");
-                            if (!isSqlBackup) {
-                                onResponse.apply(responseBody);
-                                return;
-                            }
-
-                            TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-                            textViewLoginStatus.setText(responseBodyString);
+                            onResponse.apply(responseBody);
                         }
                     });
                 } catch (JSONException e) {
