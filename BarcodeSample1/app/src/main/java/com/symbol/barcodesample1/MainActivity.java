@@ -832,6 +832,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         EditText userNameEditText = (EditText) findViewById(R.id.userName);
         TextView passwordLabel = (TextView) findViewById(R.id.passwordLabel);
         EditText passwordEditText = (EditText) findViewById(R.id.password);
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
         Button loginButton = (Button) findViewById(R.id.loginButton);
         Button logOutButton = (Button) findViewById(R.id.logOutButton);
 
@@ -856,6 +857,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 passwordLabel.setText(R.string.password_label_text);
                 passwordLabel.setVisibility(View.VISIBLE);
                 passwordEditText.setVisibility(View.VISIBLE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setText(R.string.login_button_text);
                 loginButton.setVisibility(View.VISIBLE);
                 logOutButton.setVisibility(View.GONE);
@@ -883,6 +886,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 passwordLabel.setVisibility(View.GONE);
                 passwordEditText.setText("");
                 passwordEditText.setVisibility(View.GONE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.VISIBLE);
 
@@ -905,6 +910,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 userNameEditText.setVisibility(View.GONE);
                 passwordLabel.setVisibility(View.GONE);
                 passwordEditText.setVisibility(View.GONE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
 
@@ -927,6 +934,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 userNameEditText.setVisibility(View.GONE);
                 passwordLabel.setVisibility(View.GONE);
                 passwordEditText.setVisibility(View.GONE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
 
@@ -949,6 +958,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 userNameEditText.setVisibility(View.GONE);
                 passwordLabel.setVisibility(View.GONE);
                 passwordEditText.setVisibility(View.GONE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
 
@@ -971,6 +982,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 userNameEditText.setVisibility(View.GONE);
                 passwordLabel.setVisibility(View.GONE);
                 passwordEditText.setVisibility(View.GONE);
+                textViewLoginStatus.setVisibility(View.GONE);
+                textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
 
