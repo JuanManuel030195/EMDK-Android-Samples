@@ -818,18 +818,37 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         return null;
                     },
                     (JSONObject responseBody) -> {
-                        textViewLoginStatus.setVisibility(View.VISIBLE);
-                        textViewLoginStatus.setText(responseBody.toString());
+                        try {
+                            if (
+                                !responseBody.has("success") ||
+                                !responseBody.getBoolean("success")
+                            ) {
+                                textViewLoginStatus.setText(R.string.sync_error_text);
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                                return null;
+                            }
 
-                        for (int i = 0; i < 4; i++) {
+                            if (!responseBody.has("backup")) {
+                                textViewLoginStatus.setText(R.string.sync_error_text);
+                                textViewLoginStatus.setVisibility(View.VISIBLE);
+                                return null;
+                            }
+
+                            String backup = responseBody.getString("backup");
+                            dbHandler.executeQuery(backup);
+
                             Toast.makeText(
                                     MainActivity.this,
-                                    responseBody.toString(),
+                                    "Synced with server",
                                     Toast.LENGTH_LONG
                             ).show();
-                        }
 
-                        return null;
+                            return null;
+                        } catch (JSONException e) {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                            return null;
+                        }
                     },
                     (JSONException e) -> {
                         textViewLoginStatus.setText(e.getMessage());
