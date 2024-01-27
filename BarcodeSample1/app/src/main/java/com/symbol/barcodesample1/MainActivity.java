@@ -821,11 +821,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         textViewLoginStatus.setVisibility(View.VISIBLE);
                         textViewLoginStatus.setText(responseBody.toString());
 
-//                        Toast.makeText(
-//                                MainActivity.this,
-//                                responseBody.toString(),
-//                                Toast.LENGTH_LONG
-//                        ).show();
+                        for (int i = 0; i < 4; i++) {
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    responseBody.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
 
                         return null;
                     },
