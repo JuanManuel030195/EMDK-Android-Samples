@@ -943,6 +943,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         localValidation.setId(id);
 
         this.currentValidation = localValidation;
+
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        String text = getResources().getString(R.string.confronta_f_sica_en_proceso);
+        text = text + " " + building.getName();
+        text = text + " " + employee.getName();
+        textViewLoginStatus.setText(text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
     }
 
     public void closeValidation(View view) {
