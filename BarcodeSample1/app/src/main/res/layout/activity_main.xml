@@ -70,21 +70,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/sync_with_server_button_text"
-                android:onClick="getAssets"/>
+                android:onClick="getAssets"
+                android:gravity="start|center_vertical"/>
 
             <Button
                 android:id="@+id/syncEmployeesWithServerButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/sync_employees"
-                android:onClick="getEmployees"/>
+                android:onClick="getEmployees"
+                android:gravity="start|center_vertical"/>
 
             <Button
                 android:id="@+id/syncBuildingsWithServerButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/sync_buildings"
-                android:onClick="getBuildings"/>
+                android:onClick="getBuildings"
+                android:gravity="start|center_vertical"/>
 
             <Spinner
                 android:id="@+id/employeeSpinner"

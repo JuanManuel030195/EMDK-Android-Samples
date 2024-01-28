@@ -553,8 +553,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                     (JSONObject responseBody) -> {
                         try {
                             if (
-                                    !responseBody.has("success") ||
-                                            !responseBody.getBoolean("success")
+                                !responseBody.has("success") ||
+                                !responseBody.getBoolean("success")
                             ) {
                                 textViewLoginStatus.setText(R.string.sync_error_text);
                                 textViewLoginStatus.setVisibility(View.VISIBLE);
