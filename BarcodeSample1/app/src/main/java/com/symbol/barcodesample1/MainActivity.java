@@ -1036,7 +1036,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 break;
             case VALIDATION_STARTED:
                 String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
-//                validationInfo = validationInfo + "\r\n " + this.currentValidation.getEmployeeNumber();
+                validationInfo += "\r\n " + this.currentValidation.getEmployeeNumber();
 //                validationInfo = validationInfo + "\r\n " + this.currentValidation.getBuilding();
 
                 userNameLabel.setText(validationInfo);
