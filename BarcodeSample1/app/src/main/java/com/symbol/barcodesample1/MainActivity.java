@@ -929,25 +929,22 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         updateVisualComponentsBasedOnAppState(appState);
 
         Spinner employeeSpinner = (Spinner) findViewById(R.id.employeeSpinner);
-        Employee employee = (Employee) employeeSpinner.getSelectedItem();
-
         Spinner buildingSpinner = (Spinner) findViewById(R.id.buildingSpinner);
-        Building building = (Building) buildingSpinner.getSelectedItem();
 
-        LocalValidation localValidation = new LocalValidation(
-                employee.getNumber(),
-                building.getName()
-        );
+//        LocalValidation localValidation = new LocalValidation(
+//                employee.getNumber(),
+//                building.getName()
+//        );
 
-        int id = (int) dbHandler.addValidation(localValidation);
-        localValidation.setId(id);
-
-        this.currentValidation = localValidation;
+//        int id = (int) dbHandler.addValidation(localValidation);
+//        localValidation.setId(id);
+//
+//        this.currentValidation = localValidation;
 
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
         String text = getResources().getString(R.string.confronta_f_sica_en_proceso);
-        text = text + " " + building.getName();
-        text = text + " " + employee.getName();
+        text = text + " " + buildingSpinner.getSelectedItem().toString();
+        text = text + " " + employeeSpinner.getSelectedItem().toString();
         textViewLoginStatus.setText(text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
     }
