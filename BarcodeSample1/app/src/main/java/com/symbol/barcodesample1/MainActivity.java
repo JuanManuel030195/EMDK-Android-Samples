@@ -945,13 +945,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         localValidation.setId(id);
 
         this.currentValidation = localValidation;
-
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        String text = getResources().getString(R.string.confronta_f_sica_en_proceso);
-        text = text + " " + buildingSpinner.getSelectedItem().toString();
-        text = text + " " + employeeSpinner.getSelectedItem().toString();
-        textViewLoginStatus.setText(text);
-        textViewLoginStatus.setVisibility(View.VISIBLE);
     }
 
     public void closeValidation(View view) {
@@ -1042,7 +1035,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 scannedAssetsTable.setVisibility(View.GONE);
                 break;
             case VALIDATION_STARTED:
-                userNameLabel.setText(R.string.confronta_f_sica_en_proceso);
+                String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
+                validationInfo = validationInfo + "\r\n " + this.currentValidation.getEmployeeNumber();
+                validationInfo = validationInfo + "\r\n " + this.currentValidation.getBuilding();
+
+                userNameLabel.setText(validationInfo);
                 userNameLabel.setVisibility(View.VISIBLE);
                 userNameEditText.setVisibility(View.GONE);
                 passwordLabel.setVisibility(View.GONE);
