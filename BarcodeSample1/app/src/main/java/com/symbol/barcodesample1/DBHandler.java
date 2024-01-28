@@ -214,6 +214,21 @@ public class DBHandler extends SQLiteOpenHelper {
         return employee;
     }
 
+    public Employee getEmployeeByName(String name) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_NAME_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{name});
+        Employee employee = null;
+        if (cursor.moveToFirst()) {
+            String number = cursor.getString(cursor.getColumnIndex(EMPLOYEES_ID_COL));
+            int level = cursor.getInt(cursor.getColumnIndex(EMPLOYEES_LEVEL_COL));
+            employee = new Employee(number, name, level);
+        }
+        cursor.close();
+        db.close();
+        return employee;
+    }
+
     public Building getBuildingById(int id) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + BUILDINGS_TABLE_NAME + " WHERE " + BUILDINGS_ID_COL + " = ?";
@@ -221,6 +236,21 @@ public class DBHandler extends SQLiteOpenHelper {
         Building building = null;
         if (cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndex(BUILDINGS_NAME_COL));
+            String number = cursor.getString(cursor.getColumnIndex(BUILDINGS_NUMBER_COL));
+            building = new Building(id, name, number);
+        }
+        cursor.close();
+        db.close();
+        return building;
+    }
+
+    public Building getBuildingByName(String name) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + BUILDINGS_TABLE_NAME + " WHERE " + BUILDINGS_NAME_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{name});
+        Building building = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(BUILDINGS_ID_COL));
             String number = cursor.getString(cursor.getColumnIndex(BUILDINGS_NUMBER_COL));
             building = new Building(id, name, number);
         }
