@@ -166,8 +166,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private void updateSyncButtonsText() {
         String buttonText;
 
+        long totalAssets = dbHandler.getTotalAssets();
         buttonText = getResources().getString(R.string.sync_with_server_button_text);
-        buttonText = buttonText + " (" + this.assets.length + " en local)";
+        buttonText = buttonText + " (" + totalAssets + " en local)";
         Button syncWithServerButton = (Button) findViewById(R.id.syncWithServerButton);
         syncWithServerButton.setText(buttonText);
 
