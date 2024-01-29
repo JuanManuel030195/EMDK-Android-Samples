@@ -1053,8 +1053,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         Button getEmployeesButton = (Button) findViewById(R.id.syncEmployeesWithServerButton);
         Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
 
-        Spinner employeeSpinner = (Spinner) findViewById(R.id.employeeSpinner);
-        Spinner buildingSpinner = (Spinner) findViewById(R.id.buildingSpinner);
+        AutoCompleteTextView employeeSpinner = (AutoCompleteTextView) findViewById(R.id.employeeSpinner);
+        AutoCompleteTextView buildingSpinner = (AutoCompleteTextView) findViewById(R.id.buildingSpinner);
 
         Button startValidationButton = (Button) findViewById(R.id.startValidationButton);
         Button closeValidationButton = (Button) findViewById(R.id.closeValidationButton);
