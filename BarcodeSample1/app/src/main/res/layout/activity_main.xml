@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="textAutoComplete"
-                android:completionThreshold="1"
+                android:completionThreshold="3"
                 android:autofillHints="@string/employee_name"/>
 
             <AutoCompleteTextView
@@ -102,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="textAutoComplete"
-                android:completionThreshold="1"
+                android:completionThreshold="3"
                 android:autofillHints="@string/building_name"/>
 
             <Button
