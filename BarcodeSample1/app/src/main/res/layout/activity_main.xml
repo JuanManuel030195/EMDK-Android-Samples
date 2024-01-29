@@ -89,15 +89,21 @@
                 android:onClick="getBuildings"
                 android:gravity="start|center_vertical"/>
 
-            <Spinner
+            <AutoCompleteTextView
                 android:id="@+id/employeeSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:inputType="textAutoComplete"
+                android:completionThreshold="1"
+                android:autofillHints="@string/employee_name"/>
 
-            <Spinner
+            <AutoCompleteTextView
                 android:id="@+id/buildingSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:inputType="textAutoComplete"
+                android:completionThreshold="1"
+                android:autofillHints="@string/building_name"/>
 
             <Button
                 android:id="@+id/startValidationButton"

@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -237,7 +238,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     private void setEmployeesToSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.employeeSpinner);
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.employeeSpinner);
 
         ArrayList<String> employeeNames = new ArrayList<String>();
         for (Employee employee : this.employees) {
@@ -246,16 +247,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 MainActivity.this,
-                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_dropdown_item_1line,
                 employeeNames
         );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        autoCompleteTextView.setAdapter(adapter);
     }
 
     private void setBuildingsToSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.buildingSpinner);
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.buildingSpinner);
 
         ArrayList<String> buildingNames = new ArrayList<String>();
         for (Building building : this.buildings) {
@@ -264,12 +265,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 MainActivity.this,
-                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_dropdown_item_1line,
                 buildingNames
         );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        autoCompleteTextView.setAdapter(adapter);
     }
 
     @Override
@@ -993,12 +994,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     public void startValidation(View view) {
-        Spinner employeeSpinner = (Spinner) findViewById(R.id.employeeSpinner);
-        String employeeName = employeeSpinner.getSelectedItem().toString();
+        AutoCompleteTextView employeeTextView = (AutoCompleteTextView) findViewById(R.id.employeeSpinner);
+        String employeeName = employeeTextView.getText().toString().trim();
         Employee employee = dbHandler.getEmployeeByName(employeeName);
 
-        Spinner buildingSpinner = (Spinner) findViewById(R.id.buildingSpinner);
-        String buildingName = buildingSpinner.getSelectedItem().toString();
+        AutoCompleteTextView buildingTextView = (AutoCompleteTextView) findViewById(R.id.buildingSpinner);
+        String buildingName = buildingTextView.getText().toString().trim();
         Building building = dbHandler.getBuildingByName(buildingName);
 
         LocalValidation localValidation = new LocalValidation(
