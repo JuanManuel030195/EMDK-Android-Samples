@@ -425,6 +425,36 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public boolean isEmployeeInDB(String number) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{number});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
+    public boolean isBuildingInDB(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + BUILDINGS_TABLE_NAME + " WHERE " + BUILDINGS_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
+    public boolean isAssetInDB(String number) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + ASSETS_TABLE_NAME + " WHERE " + ASSETS_NUMBER_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{number});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS '" + EMPLOYEES_TABLE_NAME + "'");
