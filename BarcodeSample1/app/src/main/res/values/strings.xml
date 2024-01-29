@@ -23,6 +23,9 @@
     <string name="location_count_text">Numero de ubicaciones: </string>
     <string name="asset_count_text">Numero de activos: </string>
 
+    <string name="employee_name">Nombre del Empleado</string>
+    <string name="building_name">Nombre del Edificio</string>
+
     <string name="new_validation_label_text">Nueva Confronta</string>
     <string name="new_validation_button_text">Iniciar Confronta</string>
     <string name="close_validation_button_text">Finalizar Confronta</string>
