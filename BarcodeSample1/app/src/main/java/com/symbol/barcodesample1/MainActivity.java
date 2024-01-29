@@ -953,7 +953,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         ) {
                             appState = AppState.LOGGED_IN;
                             updateVisualComponentsBasedOnAppState(appState);
+                            return null;
                         }
+
+                        textViewLoginStatus.setText(R.string.login_error_text);
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
                     } catch (JSONException e) {
                         textViewLoginStatus.setText(e.getMessage());
                         textViewLoginStatus.setVisibility(View.VISIBLE);

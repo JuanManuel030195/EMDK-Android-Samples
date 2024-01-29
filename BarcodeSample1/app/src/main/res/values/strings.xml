@@ -11,6 +11,7 @@
     <string name="logout_button_text">Cerrar Sesion</string>
     <string name="login_progress_signing_in_text">Iniciando Sesion…</string>
     <string name="login_progress_signing_out_text">Cerrando Sesion…</string>
+    <string name="login_error_text">Error al iniciar sesión.\r\nVerifique sus credenciales.</string>
 
     <string name="sync_with_server_label_text">Sincronizar datos con el servidor</string>
     <string name="sync_with_server_button_text">Obtener Activos</string>
