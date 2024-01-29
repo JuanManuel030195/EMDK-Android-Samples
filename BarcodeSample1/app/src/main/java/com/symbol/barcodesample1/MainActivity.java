@@ -110,6 +110,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private Asset[] assets = new Asset[0];
 
     private LocalValidation currentValidation = null;
+    private AssetPerValidation[] currentAssetsPerValidation = new AssetPerValidation[0];
 
     private AppState appState;
 
@@ -181,6 +182,31 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         buttonText = buttonText + " (" + this.buildings.length + " en local)";
         Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
         getBuildingsButton.setText(buttonText);
+    }
+
+    public void updateTableRowColor(String assetNumber, ValidationStatus status) {
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
+        for (int i = 0; i < tableLayout.getChildCount(); i++) {
+            TableRow tableRow = (TableRow) tableLayout.getChildAt(i);
+            TextView assetNumberTextView = (TextView) tableRow.getChildAt(0);
+            if (assetNumberTextView.getText().toString().equals(assetNumber)) {
+                switch (status) {
+                    case PENDING:
+                        tableRow.setBackgroundColor(getColor(R.color.colorPending));
+                        break;
+                    case OK:
+                        tableRow.setBackgroundColor(getColor(R.color.colorOk));
+                        break;
+                    case WRONG_EMPLOYEE:
+                        tableRow.setBackgroundColor(getColor(R.color.colorWrongEmployee));
+                        break;
+                    case WRONG_BUILDING:
+                        tableRow.setBackgroundColor(getColor(R.color.colorWrongBuilding));
+                        break;
+                }
+                break;
+            }
+        }
     }
 
     private void addTableRowToTableLayout(Asset asset) {
@@ -303,12 +329,49 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    private void updateValidationData(String assetNumberReed) {
+        Asset asset = null;
+        for (Asset localAsset : this.assets) {
+            if (localAsset.getNumber().equals(assetNumberReed)) {
+                asset = localAsset;
+                break;
+            }
+        }
+
+        if (asset == null) {
+            return;
+        }
+
+        AssetPerValidation assetPerValidation = null;
+        for (AssetPerValidation localAssetPerValidation : this.currentAssetsPerValidation) {
+            if (localAssetPerValidation.getAssetNumber().equals(assetNumberReed)) {
+                assetPerValidation = localAssetPerValidation;
+                break;
+            }
+        }
+
+        if (assetPerValidation == null) {
+            return;
+        }
+
+        assetPerValidation.setScanned(true);
+        assetPerValidation.setStatus(
+            asset,
+            this.currentValidation.getEmployee(),
+            this.currentValidation.getBuilding()
+        );
+
+        dbHandler.updateAssetPerValidation(assetPerValidation);
+        updateTableRowColor(asset.getNumber(), assetPerValidation.getStatus());
+    }
+
     @Override
     public void onData(ScanDataCollection scanDataCollection) {
         if ((scanDataCollection != null) && (scanDataCollection.getResult() == ScannerResults.SUCCESS)) {
             ArrayList <ScanData> scanData = scanDataCollection.getScanData();
             for(ScanData data : scanData) {
                 updateData("<font color='gray'>" + data.getLabelType() + "</font> : " + data.getData());
+                updateValidationData(data.getData());
             }
         }
     }
@@ -579,7 +642,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                         asset.getString("numeroSAP"),
                                         asset.getString("descripcion"),
                                         asset.getString("edificio"),
-                                        asset.isNull("idEdificio") ? 0 : asset.getInt("idEdificio")
+                                        asset.isNull("idEdificio") ? 0 : asset.getInt("idEdificio"),
+                                        asset.getString("numeroEmpleado")
                                 );
 
                             }
@@ -934,14 +998,28 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         Building building = dbHandler.getBuildingByName(buildingName);
 
         LocalValidation localValidation = new LocalValidation(
-                employee.getNumber(),
-                building.getName()
+                employee,
+                building
         );
 
         int id = (int) dbHandler.addValidation(localValidation);
         localValidation.setId(id);
 
         this.currentValidation = localValidation;
+
+        Asset[] assets = dbHandler.getAssetsByValidation(localValidation);
+        this.assets = assets;
+        dbHandler.addAssetsPerValidation(localValidation, assets);
+        this.currentAssetsPerValidation = new AssetPerValidation[assets.length];
+        for (int i = 0; i < assets.length; i++) {
+            this.currentAssetsPerValidation[i] = new AssetPerValidation(
+                    localValidation.getId(),
+                    assets[i].getNumber()
+            );
+
+            addTableRowToTableLayout(assets[i]);
+            updateTableRowColor(assets[i].getNumber(), ValidationStatus.PENDING);
+        }
 
         appState = AppState.VALIDATION_STARTED;
         updateVisualComponentsBasedOnAppState(appState);
@@ -1036,8 +1114,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 break;
             case VALIDATION_STARTED:
                 String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
-                validationInfo += "\r\n Empleado: " + this.currentValidation.getEmployeeNumber();
-                validationInfo += "\r\n " + this.currentValidation.getBuilding();
+                validationInfo += "\r\n Empleado: " + this.currentValidation.getEmployeeName();
+                validationInfo += "\r\n " + this.currentValidation.getBuildingName();
 
                 userNameLabel.setText(validationInfo);
                 userNameLabel.setVisibility(View.VISIBLE);
