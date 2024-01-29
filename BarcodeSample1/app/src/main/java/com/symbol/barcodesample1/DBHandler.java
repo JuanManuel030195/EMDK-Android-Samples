@@ -13,26 +13,34 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     private static final String EMPLOYEES_TABLE_NAME = "usuarios";
-    private static final String EMPLOYEES_ID_COL = "numeroEmpleado";
-    private static final String EMPLOYEES_NAME_COL = "nombre";
-    private static final String EMPLOYEES_LEVEL_COL = "nivel";
+    private static final String EMPLOYEES_ID_COL = "numeroEmpleado"; // primary key (string)
+    private static final String EMPLOYEES_NAME_COL = "nombre"; // string
+    private static final String EMPLOYEES_LEVEL_COL = "nivel"; // integer
 
     private static final String BUILDINGS_TABLE_NAME = "edificios";
-    private static final String BUILDINGS_ID_COL = "idEdificio";
-    private static final String BUILDINGS_NAME_COL = "nombre";
-    private static final String BUILDINGS_NUMBER_COL = "numero";
+    private static final String BUILDINGS_ID_COL = "idEdificio"; // primary key (integer)
+    private static final String BUILDINGS_NAME_COL = "nombre"; // string
+    private static final String BUILDINGS_NUMBER_COL = "numero"; // string
 
     private static final String ASSETS_TABLE_NAME = "activos";
-    private static final String ASSETS_NUMBER_COL = "numeroSAP";
-    private static final String ASSETS_DESCRIPTION_COL = "descripcion";
-    private static final String ASSETS_BUILDING_NAME_COL = "edificio";
-    private static final String ASSETS_BUILDING_ID_COL = "idEdificio";
+    private static final String ASSETS_NUMBER_COL = "numeroSAP"; // primary key (string)
+    private static final String ASSETS_EMPLOYEE_ID_COL = "numeroEmpleado"; // foreign key (string), target: EMPLOYEES_ID_COL from EMPLOYEES_TABLE_NAME
+    private static final String ASSETS_DESCRIPTION_COL = "descripcion"; // string
+    private static final String ASSETS_BUILDING_NAME_COL = "edificio"; // string
+    private static final String ASSETS_BUILDING_ID_COL = "idEdificio"; // foreign key (integer), target: BUILDINGS_ID_COL from BUILDINGS_TABLE_NAME
 
     private static final String VALIDATIONS_TABLE_NAME = "validaciones";
-    private static final String VALIDATIONS_ID_COL = "id";
-    private static final String VALIDATIONS_DATE_COL = "date";
-    private static final String VALIDATIONS_EMPLOYEE_NUMBER_COL = "employeeNumber";
-    private static final String VALIDATIONS_SENT_STATE_COL = "sentState";
+    private static final String VALIDATIONS_ID_COL = "idValidacion"; // primary key (integer)
+    private static final String VALIDATIONS_DATE_COL = "date"; // datetime
+    private static final String VALIDATIONS_EMPLOYEE_NUMBER_COL = "numeroEmpleado"; // foreign key (string), target: EMPLOYEES_ID_COL from EMPLOYEES_TABLE_NAME
+    private static final String VALIDATIONS_BUILDING_ID_COL = "idEdificio"; // foreign key (integer), target: BUILDINGS_ID_COL from BUILDINGS_TABLE_NAME
+    private static final String VALIDATIONS_SENT_STATE_COL = "sentState"; // boolean
+
+    private static final String ASSETS_PER_VALIDATION_TABLE_NAME = "activosPorValidacion";
+    private static final String ASSETS_PER_VALIDATION_VALIDATION_ID_COL = "idValidacion"; // foreign key (integer), target: VALIDATIONS_ID_COL from VALIDATIONS_TABLE_NAME
+    private static final String ASSETS_PER_VALIDATION_ASSET_NUMBER_COL = "numeroSAP"; // foreign key (string), target: ASSETS_NUMBER_COL from ASSETS_TABLE_NAME
+    private static final String ASSETS_PER_VALIDATION_ASSET_SCANNED_COL = "escaneado"; // boolean
+    private static final String ASSETS_PER_VALIDATION_ASSET_STATUS_COL = "estado"; // integer
 
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -54,6 +62,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         String createAssetsTable = "CREATE TABLE " + ASSETS_TABLE_NAME + " (" +
                 ASSETS_NUMBER_COL + " TEXT PRIMARY KEY, " +
+                ASSETS_EMPLOYEE_ID_COL + " TEXT, " +
                 ASSETS_DESCRIPTION_COL + " TEXT, " +
                 ASSETS_BUILDING_NAME_COL + " TEXT, " +
                 ASSETS_BUILDING_ID_COL + " INTEGER)";
@@ -63,8 +72,16 @@ public class DBHandler extends SQLiteOpenHelper {
                 VALIDATIONS_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 VALIDATIONS_DATE_COL + " DATETIME, " +
                 VALIDATIONS_EMPLOYEE_NUMBER_COL + " TEXT, " +
+                VALIDATIONS_BUILDING_ID_COL + " INTEGER, " +
                 VALIDATIONS_SENT_STATE_COL + " INTEGER)";
         db.execSQL(createValidationsTable);
+
+        String createAssetsPerValidationTable = "CREATE TABLE " + ASSETS_PER_VALIDATION_TABLE_NAME + " (" +
+                ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " INTEGER, " +
+                ASSETS_PER_VALIDATION_ASSET_NUMBER_COL + " TEXT, " +
+                ASSETS_PER_VALIDATION_ASSET_SCANNED_COL + " INTEGER, " +
+                ASSETS_PER_VALIDATION_ASSET_STATUS_COL + " INTEGER)";
+        db.execSQL(createAssetsPerValidationTable);
     }
 
     public void addEmployee(@NotNull Employee employee) {
@@ -91,6 +108,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ASSETS_NUMBER_COL, asset.getNumber());
+        values.put(ASSETS_EMPLOYEE_ID_COL, asset.getEmployeeNumber());
         values.put(ASSETS_DESCRIPTION_COL, asset.getDescription());
         values.put(ASSETS_BUILDING_NAME_COL, asset.getBuildingName());
         values.put(ASSETS_BUILDING_ID_COL, asset.getBuildingId());
@@ -103,6 +121,7 @@ public class DBHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(VALIDATIONS_DATE_COL, validation.getDate().toString());
         values.put(VALIDATIONS_EMPLOYEE_NUMBER_COL, validation.getEmployeeNumber());
+        values.put(VALIDATIONS_BUILDING_ID_COL, validation.getId());
         values.put(VALIDATIONS_SENT_STATE_COL, validation.getSentState().ordinal());
         long newRowId = db.insert(VALIDATIONS_TABLE_NAME, null, values);
         db.close();
@@ -154,10 +173,11 @@ public class DBHandler extends SQLiteOpenHelper {
         int i = 0;
         while (cursor.moveToNext()) {
             String number = cursor.getString(cursor.getColumnIndex(ASSETS_NUMBER_COL));
+            String employeeNumber = cursor.getString(cursor.getColumnIndex(ASSETS_EMPLOYEE_ID_COL));
             String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
             String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
             int buildingId = cursor.getInt(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
-            assets[i] = new Asset(number, description, buildingName, buildingId);
+            assets[i] = new Asset(number, description, buildingName, buildingId, employeeNumber);
             i++;
         }
         cursor.close();
@@ -183,21 +203,73 @@ public class DBHandler extends SQLiteOpenHelper {
         }
     }
 
+    public void addAssetsPerValidation(@NotNull LocalValidation localValidation) {
+        Asset[] assets = getAssetsByValidation(localValidation);
+        SQLiteDatabase db = getWritableDatabase();
+        for (Asset asset : assets) {
+            ContentValues values = new ContentValues();
+            values.put(ASSETS_PER_VALIDATION_VALIDATION_ID_COL, localValidation.getId());
+            values.put(ASSETS_PER_VALIDATION_ASSET_NUMBER_COL, asset.getNumber());
+            values.put(ASSETS_PER_VALIDATION_ASSET_SCANNED_COL, 0);
+            values.put(ASSETS_PER_VALIDATION_ASSET_STATUS_COL, ValidationStatus.PENDING.ordinal());
+            db.insert(ASSETS_PER_VALIDATION_TABLE_NAME, null, values);
+        }
+        db.close();
+    }
+
+    public void addAssetsPerValidation(
+        @NotNull LocalValidation localValidation,
+        @NotNull Asset[] assets)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        for (Asset asset : assets) {
+            ContentValues values = new ContentValues();
+            values.put(ASSETS_PER_VALIDATION_VALIDATION_ID_COL, localValidation.getId());
+            values.put(ASSETS_PER_VALIDATION_ASSET_NUMBER_COL, asset.getNumber());
+            values.put(ASSETS_PER_VALIDATION_ASSET_SCANNED_COL, 0);
+            values.put(ASSETS_PER_VALIDATION_ASSET_STATUS_COL, ValidationStatus.PENDING.ordinal());
+            db.insert(ASSETS_PER_VALIDATION_TABLE_NAME, null, values);
+        }
+        db.close();
+    }
+
     public Asset getAssetByNumber(String number) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + ASSETS_TABLE_NAME + " WHERE " + ASSETS_NUMBER_COL + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{number});
         Asset asset = null;
         if (cursor.moveToFirst()) {
+            String employeeNumber = cursor.getString(cursor.getColumnIndex(ASSETS_EMPLOYEE_ID_COL));
             String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
             String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
             int buildingId = cursor.getInt(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
-            asset = new Asset(number, description, buildingName, buildingId);
+            asset = new Asset(number, description, buildingName, buildingId, employeeNumber);
         }
         cursor.close();
         db.close();
         return asset;
     }
+
+    public Asset[] getAssetsByValidation(@NotNull LocalValidation validation) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + ASSETS_TABLE_NAME + " WHERE " + ASSETS_EMPLOYEE_ID_COL + " = ?" + " AND " + ASSETS_BUILDING_NAME_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{validation.getEmployeeNumber(), String.valueOf(validation.getBuilding().getName())});
+        Asset[] assets = new Asset[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()) {
+            String number = cursor.getString(cursor.getColumnIndex(ASSETS_NUMBER_COL));
+            String employeeNumber = cursor.getString(cursor.getColumnIndex(ASSETS_EMPLOYEE_ID_COL));
+            String description = cursor.getString(cursor.getColumnIndex(ASSETS_DESCRIPTION_COL));
+            String buildingName = cursor.getString(cursor.getColumnIndex(ASSETS_BUILDING_NAME_COL));
+            int buildingId = cursor.getInt(cursor.getColumnIndex(ASSETS_BUILDING_ID_COL));
+            assets[i] = new Asset(number, description, buildingName, buildingId, employeeNumber);
+            i++;
+        }
+        cursor.close();
+        db.close();
+        return assets;
+    }
+
 
     public Employee getEmployeeByNumber(String number) {
         SQLiteDatabase db = getReadableDatabase();
@@ -259,6 +331,24 @@ public class DBHandler extends SQLiteOpenHelper {
         return building;
     }
 
+    public AssetPerValidation getAssetPerValidationById(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + ASSETS_PER_VALIDATION_TABLE_NAME + " WHERE " + ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+        AssetPerValidation assetPerValidation = null;
+        if (cursor.moveToFirst()) {
+            String assetNumber = cursor.getString(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_NUMBER_COL));
+            boolean scanned = cursor.getInt(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_SCANNED_COL)) == 1;
+            ValidationStatus status = ValidationStatus.values()[cursor.getInt(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_STATUS_COL))];
+            assetPerValidation = new AssetPerValidation(id, assetNumber);
+            assetPerValidation.setScanned(scanned);
+            assetPerValidation.setStatus(getAssetByNumber(assetNumber), getEmployeeByNumber(assetNumber), getBuildingByName(assetNumber));
+        }
+        cursor.close();
+        db.close();
+        return assetPerValidation;
+    }
+
     public void clearEmployees() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + EMPLOYEES_TABLE_NAME);
@@ -274,6 +364,18 @@ public class DBHandler extends SQLiteOpenHelper {
     public void clearAssets() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + ASSETS_TABLE_NAME);
+        db.close();
+    }
+
+    public void clearValidations() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + VALIDATIONS_TABLE_NAME);
+        db.close();
+    }
+
+    public void clearAssetsPerValidation() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + ASSETS_PER_VALIDATION_TABLE_NAME);
         db.close();
     }
 
@@ -310,11 +412,26 @@ public class DBHandler extends SQLiteOpenHelper {
         return count;
     }
 
+    public void updateAssetPerValidation(@NotNull AssetPerValidation assetPerValidation) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "UPDATE " + ASSETS_PER_VALIDATION_TABLE_NAME + " SET " + ASSETS_PER_VALIDATION_ASSET_SCANNED_COL + " = ?, " + ASSETS_PER_VALIDATION_ASSET_STATUS_COL + " = ? WHERE " + ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " = ? AND " + ASSETS_PER_VALIDATION_ASSET_NUMBER_COL + " = ?";
+        db.execSQL(query, new String[]{
+            String.valueOf(assetPerValidation.isScanned() ? 1 : 0),
+            String.valueOf(assetPerValidation.getStatus().ordinal()),
+            String.valueOf(assetPerValidation.getValidationId()),
+            assetPerValidation.getAssetNumber()
+        });
+
+        db.close();
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS employees");
-        db.execSQL("DROP TABLE IF EXISTS buildings");
-        db.execSQL("DROP TABLE IF EXISTS assets");
+        db.execSQL("DROP TABLE IF EXISTS '" + EMPLOYEES_TABLE_NAME + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + BUILDINGS_TABLE_NAME + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + ASSETS_TABLE_NAME + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + VALIDATIONS_TABLE_NAME + "'");
+        db.execSQL("DROP TABLE IF EXISTS '" + ASSETS_PER_VALIDATION_TABLE_NAME + "'");
 
         onCreate(db);
     }
