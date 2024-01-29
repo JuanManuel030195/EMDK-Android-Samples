@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPending">#FFC107</color>
+    <color name="colorWrongEmployee">#F44336</color>
+    <color name="colorWrongBuilding">#F44336</color>
+    <color name="colorOk">#4CAF50</color>
+</resources>
