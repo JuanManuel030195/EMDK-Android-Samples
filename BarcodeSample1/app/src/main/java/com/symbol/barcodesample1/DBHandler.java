@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cda";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String EMPLOYEES_TABLE_NAME = "usuarios";
     private static final String EMPLOYEES_ID_COL = "numeroEmpleado"; // primary key (string)
