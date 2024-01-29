@@ -4,17 +4,17 @@ import java.util.Date;
 
 public class LocalValidation {
     private final Date date;
-    private final String employeeNumber;
-    private final String building;
+    private final Employee employee;
+    private final Building building;
 
     private SentState sentState;
     private int id;
 
-    public LocalValidation(String employeeNumber, String building) {
+    public LocalValidation(Employee employee, Building building) {
         this.date = new Date();
         this.sentState = SentState.NOT_SENT;
 
-        this.employeeNumber = employeeNumber;
+        this.employee = employee;
         this.building = building;
     }
 
@@ -22,12 +22,24 @@ public class LocalValidation {
         return date;
     }
 
+    public Employee getEmployee() {
+        return employee;
+    }
     public String getEmployeeNumber() {
-        return employeeNumber;
+        return employee.getNumber();
+    }
+    public String getEmployeeName() {
+        return employee.getName();
     }
 
-    public String getBuilding() {
+    public Building getBuilding() {
         return building;
+    }
+    public String getBuildingName() {
+        return building.getName();
+    }
+    public String getBuildingNumber() {
+        return building.getNumber();
     }
 
     public SentState getSentState() {
