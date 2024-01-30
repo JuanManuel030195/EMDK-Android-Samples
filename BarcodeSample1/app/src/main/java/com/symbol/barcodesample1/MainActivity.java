@@ -339,6 +339,10 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             }
         }
 
+        if (asset == null && dbHandler.isAssetInDB(assetNumberReed)) {
+            asset = dbHandler.getAssetByNumber(assetNumberReed);
+        }
+
         if (asset == null) {
             return;
         }
@@ -352,7 +356,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
 
         if (assetPerValidation == null) {
-            return;
+            assetPerValidation = new AssetPerValidation(
+                    this.currentValidation.getId(),
+                    asset.getNumber()
+            );
+
+            dbHandler.addAssetPerValidation(assetPerValidation);
         }
 
         assetPerValidation.setScanned(true);
