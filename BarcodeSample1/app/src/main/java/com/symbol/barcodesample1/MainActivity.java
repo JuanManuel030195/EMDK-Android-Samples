@@ -338,9 +338,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     private void updateValidationData(String assetNumberReed) {
-        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-        textViewLoginStatus.setText(assetNumberReed);
-        textViewLoginStatus.setVisibility(View.VISIBLE);
+        Toast.makeText(
+                MainActivity.this,
+                "Asset: " + assetNumberReed,
+                Toast.LENGTH_LONG
+        ).show();
 
         Asset asset = null;
         for (Asset localAsset : this.assets) {
@@ -394,7 +396,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             ArrayList <ScanData> scanData = scanDataCollection.getScanData();
             for(ScanData data : scanData) {
                 updateData("<font color='gray'>" + data.getLabelType() + "</font> : " + data.getData());
-                updateValidationData(data.getData());
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateValidationData(data.getData());
+                    }
+                });
             }
         }
     }
