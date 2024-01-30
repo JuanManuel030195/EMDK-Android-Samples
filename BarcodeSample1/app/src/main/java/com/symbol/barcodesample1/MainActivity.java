@@ -1136,6 +1136,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         Button sendValidationButton = (Button) findViewById(R.id.sendValidationButton);
 
         TableLayout scannedAssetsTable = (TableLayout) findViewById(R.id.scannedAssetsTable);
+        Button buttonScan = (Button) findViewById(R.id.buttonScan);
 
         switch (state) {
             case NOT_LOGGED_IN:
@@ -1164,6 +1165,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.removeAllViews();
                 scannedAssetsTable.setVisibility(View.GONE);
+                buttonScan.setVisibility(View.GONE);
                 break;
             case LOGGED_IN:
                 boolean isEmployeeInLocal = dbHandler.isEmployeeInDB(this.username);
@@ -1194,6 +1196,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 sendValidationButton.setVisibility(View.GONE);
 
                 scannedAssetsTable.setVisibility(View.GONE);
+                buttonScan.setVisibility(View.GONE);
                 break;
             case VALIDATION_STARTED:
                 String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
@@ -1222,6 +1225,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 sendValidationButton.setVisibility(View.GONE);
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
+                buttonScan.setVisibility(View.VISIBLE);
                 break;
             case VALIDATION_ENDED:
                 userNameLabel.setText(R.string.confronta_f_sica_termianda);
@@ -1246,6 +1250,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 sendValidationButton.setVisibility(View.VISIBLE);
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
+                buttonScan.setVisibility(View.GONE);
                 break;
             case ON_OLD_VALIDATIONS:
                 userNameLabel.setText(R.string.confrontas_f_sicas_pendientes);
@@ -1270,6 +1275,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 sendValidationButton.setVisibility(View.GONE);
 
                 scannedAssetsTable.setVisibility(View.GONE);
+                buttonScan.setVisibility(View.GONE);
                 break;
             case ON_OLD_VALIDATION:
                 userNameLabel.setText(R.string.confronta_f_sica_pendiente);
@@ -1294,6 +1300,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 sendValidationButton.setVisibility(View.VISIBLE);
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
+                buttonScan.setVisibility(View.VISIBLE);
                 break;
         }
     }
