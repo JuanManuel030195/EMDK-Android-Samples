@@ -338,6 +338,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     private void updateValidationData(String assetNumberReed) {
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        String validationStatusText = "Última lectura: " + assetNumberReed;
+        textViewLoginStatus.setText(validationStatusText);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
         Asset asset = null;
         for (Asset localAsset : this.assets) {
             if (localAsset.getNumber().equals(assetNumberReed)) {
