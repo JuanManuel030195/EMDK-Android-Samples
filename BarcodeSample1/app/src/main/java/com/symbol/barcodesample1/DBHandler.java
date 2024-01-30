@@ -205,6 +205,17 @@ public class DBHandler extends SQLiteOpenHelper {
         }
     }
 
+    public void addAssetPerValidation(@NotNull AssetPerValidation assetPerValidation) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ASSETS_PER_VALIDATION_VALIDATION_ID_COL, assetPerValidation.getValidationId());
+        values.put(ASSETS_PER_VALIDATION_ASSET_NUMBER_COL, assetPerValidation.getAssetNumber());
+        values.put(ASSETS_PER_VALIDATION_ASSET_SCANNED_COL, assetPerValidation.isScanned() ? 1 : 0);
+        values.put(ASSETS_PER_VALIDATION_ASSET_STATUS_COL, assetPerValidation.getStatus().ordinal());
+        db.insert(ASSETS_PER_VALIDATION_TABLE_NAME, null, values);
+        db.close();
+    }
+
     public void addAssetsPerValidation(@NotNull LocalValidation localValidation) {
         Asset[] assets = getAssetsByValidation(localValidation);
         SQLiteDatabase db = getWritableDatabase();
