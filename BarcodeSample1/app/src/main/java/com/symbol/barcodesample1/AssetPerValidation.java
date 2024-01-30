@@ -52,4 +52,8 @@ public class AssetPerValidation {
 
         this.status = ValidationStatus.OK;
     }
+
+    public void setStatus(ValidationStatus status) {
+        this.status = status;
+    }
 }
