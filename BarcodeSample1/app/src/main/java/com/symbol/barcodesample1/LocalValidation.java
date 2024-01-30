@@ -18,6 +18,14 @@ public class LocalValidation {
         this.building = building;
     }
 
+    public LocalValidation(int id, Date date, Employee employee, Building building, SentState sentState) {
+        this.id = id;
+        this.date = date;
+        this.employee = employee;
+        this.building = building;
+        this.sentState = sentState;
+    }
+
     public Date getDate() {
         return date;
     }
