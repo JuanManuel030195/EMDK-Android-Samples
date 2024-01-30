@@ -1028,6 +1028,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         appState = AppState.VALIDATION_STARTED;
         updateVisualComponentsBasedOnAppState(appState);
+
+        initScanner();
+        softScan(view);
     }
 
     public void closeValidation(View view) {
