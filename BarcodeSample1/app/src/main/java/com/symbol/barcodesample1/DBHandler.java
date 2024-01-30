@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Date;
+
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cda";
     private static final int DB_VERSION = 2;
@@ -331,6 +333,58 @@ public class DBHandler extends SQLiteOpenHelper {
         return building;
     }
 
+    public LocalValidation[] getOldValidations(SentState sentState) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + VALIDATIONS_TABLE_NAME + " WHERE " + VALIDATIONS_SENT_STATE_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(sentState.ordinal())});
+        LocalValidation[] validations = new LocalValidation[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_ID_COL));
+            String employeeNumber = cursor.getString(cursor.getColumnIndex(VALIDATIONS_EMPLOYEE_NUMBER_COL));
+            int buildingId = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_BUILDING_ID_COL));
+            Building building = getBuildingById(buildingId);
+            Employee employee = getEmployeeByNumber(employeeNumber);
+            LocalValidation validation = new LocalValidation(
+                id,
+                new Date(cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL))),
+                employee,
+                building,
+                sentState
+            );
+            validation.setId(id);
+            validation.setSentState(sentState);
+            validations[i] = validation;
+            i++;
+        }
+        cursor.close();
+        db.close();
+        return validations;
+    }
+
+    public LocalValidation getValidationById(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + VALIDATIONS_TABLE_NAME + " WHERE " + VALIDATIONS_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+        LocalValidation validation = null;
+        if (cursor.moveToFirst()) {
+            String employeeNumber = cursor.getString(cursor.getColumnIndex(VALIDATIONS_EMPLOYEE_NUMBER_COL));
+            int buildingId = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_BUILDING_ID_COL));
+            Building building = getBuildingById(buildingId);
+            Employee employee = getEmployeeByNumber(employeeNumber);
+            validation = new LocalValidation(
+                id,
+                new Date(cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL))),
+                employee,
+                building,
+                SentState.values()[cursor.getInt(cursor.getColumnIndex(VALIDATIONS_SENT_STATE_COL))]
+            );
+        }
+        cursor.close();
+        db.close();
+        return validation;
+    }
+
     public AssetPerValidation getAssetPerValidationById(int id) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + ASSETS_PER_VALIDATION_TABLE_NAME + " WHERE " + ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " = ?";
@@ -347,6 +401,26 @@ public class DBHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return assetPerValidation;
+    }
+
+    public AssetPerValidation[] getAssetsPerValidationByValidationId(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + ASSETS_PER_VALIDATION_TABLE_NAME + " WHERE " + ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+        AssetPerValidation[] assetPerValidations = new AssetPerValidation[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()) {
+            String assetNumber = cursor.getString(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_NUMBER_COL));
+            boolean scanned = cursor.getInt(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_SCANNED_COL)) == 1;
+            ValidationStatus status = ValidationStatus.values()[cursor.getInt(cursor.getColumnIndex(ASSETS_PER_VALIDATION_ASSET_STATUS_COL))];
+            assetPerValidations[i] = new AssetPerValidation(id, assetNumber);
+            assetPerValidations[i].setScanned(scanned);
+            assetPerValidations[i].setStatus(status);
+            i++;
+        }
+        cursor.close();
+        db.close();
+        return assetPerValidations;
     }
 
     public void clearEmployees() {
