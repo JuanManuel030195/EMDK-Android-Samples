@@ -330,6 +330,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    private void addNewAssetPerValidation(AssetPerValidation assetPerValidation) {
+        AssetPerValidation[] newCurrentAssetsPerValidation = new AssetPerValidation[this.currentAssetsPerValidation.length + 1];
+        System.arraycopy(this.currentAssetsPerValidation, 0, newCurrentAssetsPerValidation, 0, this.currentAssetsPerValidation.length);
+        newCurrentAssetsPerValidation[this.currentAssetsPerValidation.length] = assetPerValidation;
+        this.currentAssetsPerValidation = newCurrentAssetsPerValidation;
+    }
+
     private void updateValidationData(String assetNumberReed) {
         Asset asset = null;
         for (Asset localAsset : this.assets) {
@@ -362,6 +369,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             );
 
             dbHandler.addAssetPerValidation(assetPerValidation);
+            addNewAssetPerValidation(assetPerValidation);
+            addTableRowToTableLayout(asset);
         }
 
         assetPerValidation.setScanned(true);
