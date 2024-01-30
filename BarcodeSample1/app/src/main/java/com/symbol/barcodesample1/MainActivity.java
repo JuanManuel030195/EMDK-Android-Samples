@@ -1035,9 +1035,84 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         updateVisualComponentsBasedOnAppState(appState);
     }
 
+    public void loadOldValidation(int validationId) {
+        this.currentValidation = dbHandler.getValidationById(validationId);
+        this.currentAssetsPerValidation = dbHandler.getAssetsPerValidationByValidationId(validationId);
+        this.assets = new Asset[this.currentAssetsPerValidation.length];
+        for (int i = 0; i < this.currentAssetsPerValidation.length; i++) {
+            this.assets[i] = dbHandler.getAssetByNumber(
+                this.currentAssetsPerValidation[i].getAssetNumber()
+            );
+        }
+    }
+
+    public LocalValidation[] getOldValidations(SentState sentState) {
+        return dbHandler.getOldValidations(sentState);
+    }
+
     public void sendValidation(View view) {
-        appState = AppState.ON_OLD_VALIDATIONS;
-        updateVisualComponentsBasedOnAppState(appState);
+        TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+        textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
+        textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("numeroEmpleado", this.username);
+            requestBody.put("password", this.password);
+            requestBody.put("currentValidation", this.currentValidation);
+            requestBody.put("assets", this.assets);
+            requestBody.put("currentAssetsPerValidation", this.currentAssetsPerValidation);
+        } catch (JSONException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String endPoint = "index.php?r=auth%2Fconfronta";
+        try {
+            postRequest(
+                    endPoint,
+                    requestBody,
+                    (IOException e) -> {
+                        onPostFailed(e);
+                        return null;
+                    },
+                    (JSONObject responseBody) -> {
+                        try {
+                            if (
+                                !responseBody.has("success") ||
+                                !responseBody.getBoolean("success")
+                            ) {
+                                return null;
+                            }
+
+                            // On logged in, by the moment
+                            appState = AppState.LOGGED_IN;
+                            updateVisualComponentsBasedOnAppState(appState);
+
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Confronta física enviada!",
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                        } catch (JSONException e) {
+                            textViewLoginStatus.setText(e.getMessage());
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+
+                        return null;
+                    },
+                    (JSONException e) -> {
+                        textViewLoginStatus.setText(e.getMessage());
+                        textViewLoginStatus.setVisibility(View.VISIBLE);
+                        return null;
+                    }
+            );
+        } catch (IOException e) {
+            textViewLoginStatus.setText(R.string.sync_error_text);
+            System.out.println(e.getMessage());
+        }
     }
 
     private void updateVisualComponentsBasedOnAppState(AppState state) {
