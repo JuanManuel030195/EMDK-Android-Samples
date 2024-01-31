@@ -89,13 +89,21 @@
                 android:onClick="getBuildings"
                 android:gravity="start|center_vertical"/>
 
+            <Button
+                android:id="@+id/loadOldValidationsButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/old_validation_button_text"
+                android:onClick="getOldValidations"
+                android:gravity="start|center_vertical"/>
+
             <AutoCompleteTextView
                 android:id="@+id/employeeSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="textAutoComplete"
                 android:completionThreshold="3"
-                android:autofillHints="@string/employee_name"/>
+                android:autofillHints="@string/employee_name" />
 
             <AutoCompleteTextView
                 android:id="@+id/buildingSpinner"
@@ -134,8 +142,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:onClick="softScan"
-                android:text="Scan"
+                android:text="@string/scan"
                 android:visibility="gone" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="horizontal|vertical">
+
+                <TableLayout
+                    android:id="@+id/oldValidationsTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <TableRow
+                        android:id="@+id/oldValidationsTableHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/oldValidationDateHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/opciones" />
+
+                        <TextView
+                            android:id="@+id/oldValidationDetailsHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/asset_number_header_text" />
+                    </TableRow>
+
+                </TableLayout>
+
+            </HorizontalScrollView>
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -151,6 +191,12 @@
                         android:id="@+id/scannedAssetsTableHeader"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/assetActionsHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/opciones" />
 
                         <TextView
                             android:id="@+id/assetNumberHeader"
