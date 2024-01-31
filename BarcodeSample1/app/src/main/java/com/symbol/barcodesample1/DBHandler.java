@@ -510,6 +510,20 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateAsset(@NotNull Asset asset) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "UPDATE " + ASSETS_TABLE_NAME + " SET " + ASSETS_EMPLOYEE_ID_COL + " = ?, " + ASSETS_DESCRIPTION_COL + " = ?, " + ASSETS_BUILDING_NAME_COL + " = ?, " + ASSETS_BUILDING_ID_COL + " = ? WHERE " + ASSETS_NUMBER_COL + " = ?";
+        db.execSQL(query, new String[]{
+            asset.getEmployeeNumber(),
+            asset.getDescription(),
+            asset.getBuildingName(),
+            String.valueOf(asset.getBuildingId()),
+            asset.getNumber()
+        });
+
+        db.close();
+    }
+
     public boolean isEmployeeInDB(String number) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_ID_COL + " = ?";
