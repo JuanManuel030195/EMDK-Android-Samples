@@ -210,7 +210,35 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         }
     }
 
+    private void updateAsset(Asset asset) {
+        dbHandler.updateAsset(asset);
+    }
+
+    private Button generateIconButtonToUpdateAsset(Asset asset) {
+        boolean itBelongsToCurrentValidation = true;
+        itBelongsToCurrentValidation &= currentValidation.getEmployeeNumber().equals(asset.getEmployeeNumber());
+        itBelongsToCurrentValidation &= currentValidation.getBuilding().getId() == asset.getBuildingId();
+
+        Button button = new Button(MainActivity.this);
+        button.setText("Actualizar");
+        button.setVisibility(itBelongsToCurrentValidation ? View.VISIBLE : View.GONE);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                asset.setBuildingId(currentValidation.getBuilding().getId());
+                asset.setEmployeeNumber(currentValidation.getEmployeeNumber());
+                updateAsset(asset);
+                updateTableRowColor(asset.getNumber(), ValidationStatus.OK);
+            }
+        });
+
+        return button;
+    }
+
     private void addTableRowToTableLayout(Asset asset) {
+        Button button = generateIconButtonToUpdateAsset(asset);
+
         TextView newAssetNumberTextView = new TextView(MainActivity.this);
         newAssetNumberTextView.setText(asset.getNumber());
 
@@ -218,6 +246,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         newAssetDescriptionTextView.setText(asset.getDescription());
 
         TableRow newTableRow = new TableRow(MainActivity.this);
+        newTableRow.addView(button);
         newTableRow.addView(newAssetNumberTextView);
         newTableRow.addView(newAssetDescriptionTextView);
 
@@ -800,6 +829,40 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         this.buildings = buildings;
     }
 
+    private void addTableRowToOldValidationsTable(LocalValidation oldValidation) {
+        Button button = new Button(MainActivity.this);
+        button.setText(R.string.continuar);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadOldValidation(oldValidation.getId());
+            }
+        });
+
+        TextView oldValidationDetailsTextView = new TextView(MainActivity.this);
+        String oldValidationDetails = oldValidation.getDate().toString();
+        oldValidationDetails += "\n" + oldValidation.getEmployeeName();
+        oldValidationDetails += "\n" + oldValidation.getBuildingName();
+        oldValidationDetailsTextView.setText(oldValidationDetails);
+
+        TableRow newTableRow = new TableRow(MainActivity.this);
+        newTableRow.addView(button);
+        newTableRow.addView(oldValidationDetailsTextView);
+
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.oldValidationsTable);
+        tableLayout.addView(newTableRow);
+    }
+
+    public void getOldValidations(View view) {
+        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
+        for (LocalValidation localValidation : localValidations) {
+            addTableRowToOldValidationsTable(localValidation);
+        }
+
+        appState = AppState.ON_OLD_VALIDATIONS;
+        updateVisualComponentsBasedOnAppState(appState);
+    }
+
     public void getBuildings(View view) {
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
         textViewLoginStatus.setText(R.string.sync_with_server_progress_text);
@@ -1078,6 +1141,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 this.currentAssetsPerValidation[i].getAssetNumber()
             );
         }
+
+        appState = AppState.ON_OLD_VALIDATION;
+        updateVisualComponentsBasedOnAppState(appState);
     }
 
     public LocalValidation[] getOldValidations(SentState sentState) {
@@ -1161,6 +1227,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         Button syncWithServerButton = (Button) findViewById(R.id.syncWithServerButton);
         Button getEmployeesButton = (Button) findViewById(R.id.syncEmployeesWithServerButton);
         Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
+        Button getOldValidationsButton = (Button) findViewById(R.id.loadOldValidationsButton);
 
         AutoCompleteTextView employeeSpinner = (AutoCompleteTextView) findViewById(R.id.employeeSpinner);
         AutoCompleteTextView buildingSpinner = (AutoCompleteTextView) findViewById(R.id.buildingSpinner);
@@ -1171,6 +1238,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         TableLayout scannedAssetsTable = (TableLayout) findViewById(R.id.scannedAssetsTable);
         Button buttonScan = (Button) findViewById(R.id.buttonScan);
+
+        TableLayout oldValidationsTable = (TableLayout) findViewById(R.id.oldValidationsTable);
 
         switch (state) {
             case NOT_LOGGED_IN:
@@ -1189,6 +1258,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.GONE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
@@ -1200,6 +1270,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 scannedAssetsTable.removeAllViews();
                 scannedAssetsTable.setVisibility(View.GONE);
                 buttonScan.setVisibility(View.GONE);
+
+                oldValidationsTable.setVisibility(View.GONE);
                 break;
             case LOGGED_IN:
                 boolean isEmployeeInLocal = dbHandler.isEmployeeInDB(this.username);
@@ -1221,6 +1293,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.VISIBLE);
                 getEmployeesButton.setVisibility(View.VISIBLE);
                 getBuildingsButton.setVisibility(View.VISIBLE);
+                getOldValidationsButton.setVisibility(View.VISIBLE);
 
                 employeeSpinner.setVisibility(View.VISIBLE);
                 buildingSpinner.setVisibility(View.VISIBLE);
@@ -1231,6 +1304,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.setVisibility(View.GONE);
                 buttonScan.setVisibility(View.GONE);
+                oldValidationsTable.setVisibility(View.GONE);
                 break;
             case VALIDATION_STARTED:
                 String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
@@ -1250,6 +1324,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.GONE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
@@ -1260,6 +1335,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
                 buttonScan.setVisibility(View.VISIBLE);
+                oldValidationsTable.setVisibility(View.GONE);
                 break;
             case VALIDATION_ENDED:
                 userNameLabel.setText(R.string.confronta_f_sica_termianda);
@@ -1275,6 +1351,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.GONE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
@@ -1285,6 +1362,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
                 buttonScan.setVisibility(View.GONE);
+                oldValidationsTable.setVisibility(View.GONE);
                 break;
             case ON_OLD_VALIDATIONS:
                 userNameLabel.setText(R.string.confrontas_f_sicas_pendientes);
@@ -1300,6 +1378,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.GONE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
@@ -1310,6 +1389,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.setVisibility(View.GONE);
                 buttonScan.setVisibility(View.GONE);
+                oldValidationsTable.setVisibility(View.VISIBLE);
                 break;
             case ON_OLD_VALIDATION:
                 userNameLabel.setText(R.string.confronta_f_sica_pendiente);
@@ -1325,6 +1405,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.GONE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
@@ -1335,6 +1416,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
                 scannedAssetsTable.setVisibility(View.VISIBLE);
                 buttonScan.setVisibility(View.VISIBLE);
+                oldValidationsTable.setVisibility(View.GONE);
                 break;
         }
     }
