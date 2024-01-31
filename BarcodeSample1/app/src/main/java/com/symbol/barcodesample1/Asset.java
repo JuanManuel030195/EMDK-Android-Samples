@@ -4,8 +4,8 @@ public class Asset {
     private final String number;
     private final String description;
     private final String buildingName;
-    private final int buildingId;
-    private final String employeeNumber;
+    private int buildingId;
+    private String employeeNumber;
 
     public Asset(
         String number,
@@ -38,5 +38,13 @@ public class Asset {
     }
     public String getEmployeeNumber() {
         return employeeNumber;
+    }
+
+    public void setBuildingId(int id) {
+        this.buildingId = id;
+    }
+
+    public void setEmployeeNumber(String employeeNumber) {
+        this.employeeNumber = employeeNumber;
     }
 }
