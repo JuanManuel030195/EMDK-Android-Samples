@@ -1114,6 +1114,17 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         int id = (int) dbHandler.addValidation(localValidation);
         localValidation.setId(id);
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        MainActivity.this,
+                        localValidation.getBuilding().getId(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+
         this.currentValidation = localValidation;
 
         Asset[] assets = dbHandler.getAssetsByValidation(localValidation);
