@@ -226,7 +226,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         itBelongsToCurrentValidation &= currentValidation.getBuilding().getId() == asset.getBuildingId();
 
         Button button = new Button(MainActivity.this);
-        button.setText("Actualizar");
+        button.setText(getResources().getString(R.string.actualizar));
         button.setVisibility(!itBelongsToCurrentValidation ? View.VISIBLE : View.GONE);
 
         button.setOnClickListener(new View.OnClickListener() {
