@@ -365,9 +365,15 @@ public class DBHandler extends SQLiteOpenHelper {
             }
             Building building = getBuildingById(buildingId);
 
+            String strDate = cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL));
+            boolean isValidDate = strDate != null && !strDate.isEmpty();
+            if (!isValidDate) {
+                continue;
+            }
+
             LocalValidation validation = new LocalValidation(
                 id,
-                new Date(cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL))),
+                new Date(strDate),
                 employee,
                 building,
                 sentState
