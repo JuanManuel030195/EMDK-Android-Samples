@@ -186,9 +186,22 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         long totalValidations = dbHandler.getTotalValidations(SentState.NOT_SENT);
         buttonText = getResources().getString(R.string.confrontas_pendientes);
-        buttonText = buttonText + " (" + dbHandler.getOldValidations(SentState.NOT_SENT).length + " en local)";
+        buttonText = buttonText + " (" + totalValidations + " en local)";
         Button getOldValidationsButton = (Button) findViewById(R.id.loadOldValidationsButton);
         getOldValidationsButton.setText(buttonText);
+
+        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("oldValidations", localValidations);
+
+            TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+            textViewLoginStatus.setText(requestBody.toString());
+            textViewLoginStatus.setVisibility(View.VISIBLE);
+
+        } catch (JSONException e) {
+            return;
+        }
     }
 
     public void updateTableRowColor(String assetNumber, ValidationStatus status) {
