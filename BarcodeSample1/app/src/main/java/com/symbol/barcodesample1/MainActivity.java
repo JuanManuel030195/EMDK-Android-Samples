@@ -369,7 +369,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private void updateValidationData(String assetNumberReed) {
         Toast.makeText(
                 MainActivity.this,
-                "Asset: " + assetNumberReed,
+                "Número SAP: " + assetNumberReed,
                 Toast.LENGTH_LONG
         ).show();
 
