@@ -346,7 +346,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public LocalValidation[] getOldValidations(SentState sentState) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + VALIDATIONS_TABLE_NAME + " WHERE " + VALIDATIONS_SENT_STATE_COL + " = ? AND " + VALIDATIONS_EMPLOYEE_NUMBER_COL + " IS NOT NULL AND " + VALIDATIONS_BUILDING_ID_COL + " IS NOT NULL";
+        String query = "SELECT * FROM " + VALIDATIONS_TABLE_NAME + " WHERE " + VALIDATIONS_SENT_STATE_COL + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(sentState.ordinal())});
         LocalValidation[] validations = new LocalValidation[cursor.getCount()];
         int i = 0;
@@ -354,8 +354,17 @@ public class DBHandler extends SQLiteOpenHelper {
             int id = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_ID_COL));
             String employeeNumber = cursor.getString(cursor.getColumnIndex(VALIDATIONS_EMPLOYEE_NUMBER_COL));
             int buildingId = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_BUILDING_ID_COL));
-            Building building = getBuildingById(buildingId);
+            boolean isEmployeeInDB = isEmployeeInDB(employeeNumber);
+            if (!isEmployeeInDB) {
+                continue;
+            }
             Employee employee = getEmployeeByNumber(employeeNumber);
+            boolean isBuildingInDB = isBuildingInDB(buildingId);
+            if (!isBuildingInDB) {
+                continue;
+            }
+            Building building = getBuildingById(buildingId);
+
             LocalValidation validation = new LocalValidation(
                 id,
                 new Date(cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL))),
