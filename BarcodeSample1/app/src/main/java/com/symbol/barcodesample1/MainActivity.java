@@ -1315,7 +1315,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getOldValidationsButton.setVisibility(appState == AppState.LOGGED_IN ? View.VISIBLE : View.GONE);LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
+                        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
                         JSONObject requestBody = new JSONObject();
                         try {
                             requestBody.put("oldValidations", localValidations);
