@@ -1429,7 +1429,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
                 getBuildingsButton.setVisibility(View.GONE);
-                getOldValidationsButton.setVisibility(View.GONE);
+                getOldValidationsButton.setVisibility(View.VISIBLE);
 
                 employeeSpinner.setVisibility(View.GONE);
                 buildingSpinner.setVisibility(View.GONE);
