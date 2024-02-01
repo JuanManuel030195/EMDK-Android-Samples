@@ -1119,7 +1119,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             public void run() {
                 Toast.makeText(
                         MainActivity.this,
-                        localValidation.getBuilding().getId(),
+                        String.valueOf(localValidation.getBuilding().getId()),
                         Toast.LENGTH_LONG
                 ).show();
             }
