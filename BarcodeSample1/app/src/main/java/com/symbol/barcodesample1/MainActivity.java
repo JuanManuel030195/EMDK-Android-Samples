@@ -1114,12 +1114,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         int id = (int) dbHandler.addValidation(localValidation);
         localValidation.setId(id);
 
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(
                         MainActivity.this,
-                        String.valueOf(building.getId()),
+                        localValidation.getBuilding().toString(),
                         Toast.LENGTH_LONG
                 ).show();
             }
