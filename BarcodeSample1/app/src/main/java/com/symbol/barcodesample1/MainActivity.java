@@ -1311,24 +1311,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 scannedAssetsTable.setVisibility(View.GONE);
                 buttonScan.setVisibility(View.GONE);
                 oldValidationsTable.setVisibility(View.GONE);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
-                        JSONObject requestBody = new JSONObject();
-                        try {
-                            requestBody.put("oldValidations", localValidations);
-
-                            TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-                            textViewLoginStatus.setText(requestBody.toString());
-                            textViewLoginStatus.setVisibility(View.VISIBLE);
-
-                        } catch (JSONException e) {
-                            return;
-                        }
-                    }
-                });
                 break;
             case VALIDATION_STARTED:
                 String validationInfo = getResources().getString(R.string.confronta_f_sica_en_proceso);
