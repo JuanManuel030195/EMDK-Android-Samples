@@ -184,24 +184,29 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
         getBuildingsButton.setText(buttonText);
 
-        long totalValidations = dbHandler.getTotalValidations(SentState.NOT_SENT);
-        buttonText = getResources().getString(R.string.confrontas_pendientes);
-        buttonText = buttonText + " (" + totalValidations + " en local)";
-        Button getOldValidationsButton = (Button) findViewById(R.id.loadOldValidationsButton);
-        getOldValidationsButton.setText(buttonText);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                long totalValidations = dbHandler.getTotalValidations(SentState.NOT_SENT);
+                String buttonText = getResources().getString(R.string.confrontas_pendientes);
+                buttonText = buttonText + " (" + totalValidations + " en local)";
+                Button getOldValidationsButton = (Button) findViewById(R.id.loadOldValidationsButton);
+                getOldValidationsButton.setText(buttonText);
 
-        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("oldValidations", localValidations);
+                LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("oldValidations", localValidations);
 
-            TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
-            textViewLoginStatus.setText(requestBody.toString());
-            textViewLoginStatus.setVisibility(View.VISIBLE);
+                    TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
+                    textViewLoginStatus.setText(requestBody.toString());
+                    textViewLoginStatus.setVisibility(View.VISIBLE);
 
-        } catch (JSONException e) {
-            return;
-        }
+                } catch (JSONException e) {
+                    return;
+                }
+            }
+        });
     }
 
     public void updateTableRowColor(String assetNumber, ValidationStatus status) {
