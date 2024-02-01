@@ -50,5 +50,6 @@
     <string name="opciones">Opciones</string>
     <string name="scan">Scan</string>
     <string name="continuar">Continuar</string>
+    <string name="confrontas_pendientes">Confrontas pendientes</string>
 
 </resources>

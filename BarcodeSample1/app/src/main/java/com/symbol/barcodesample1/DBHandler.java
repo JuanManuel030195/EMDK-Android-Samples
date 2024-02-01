@@ -497,6 +497,17 @@ public class DBHandler extends SQLiteOpenHelper {
         return count;
     }
 
+    public long getTotalValidations(SentState sentState) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + VALIDATIONS_TABLE_NAME + " WHERE " + VALIDATIONS_SENT_STATE_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(sentState.ordinal())});
+        cursor.moveToFirst();
+        long count = cursor.getLong(0);
+        cursor.close();
+        db.close();
+        return count;
+    }
+
     public void updateAssetPerValidation(@NotNull AssetPerValidation assetPerValidation) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "UPDATE " + ASSETS_PER_VALIDATION_TABLE_NAME + " SET " + ASSETS_PER_VALIDATION_ASSET_SCANNED_COL + " = ?, " + ASSETS_PER_VALIDATION_ASSET_STATUS_COL + " = ? WHERE " + ASSETS_PER_VALIDATION_VALIDATION_ID_COL + " = ? AND " + ASSETS_PER_VALIDATION_ASSET_NUMBER_COL + " = ?";

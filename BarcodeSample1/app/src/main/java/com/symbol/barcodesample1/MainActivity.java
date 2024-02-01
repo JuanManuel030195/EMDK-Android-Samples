@@ -183,6 +183,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         buttonText = buttonText + " (" + this.buildings.length + " en local)";
         Button getBuildingsButton = (Button) findViewById(R.id.syncBuildingsWithServerButton);
         getBuildingsButton.setText(buttonText);
+
+        long totalValidations = dbHandler.getTotalValidations(SentState.NOT_SENT);
+        buttonText = getResources().getString(R.string.confrontas_pendientes);
+        buttonText = buttonText + " (" + dbHandler.getOldValidations(SentState.NOT_SENT).length + " en local)";
+        Button getOldValidationsButton = (Button) findViewById(R.id.loadOldValidationsButton);
+        getOldValidationsButton.setText(buttonText);
     }
 
     public void updateTableRowColor(String assetNumber, ValidationStatus status) {
