@@ -860,13 +860,18 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     public void getOldValidations(View view) {
-        LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
-        for (LocalValidation localValidation : localValidations) {
-            addTableRowToOldValidationsTable(localValidation);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
+                for (LocalValidation localValidation : localValidations) {
+                    addTableRowToOldValidationsTable(localValidation);
+                }
 
-        appState = AppState.ON_OLD_VALIDATIONS;
-        updateVisualComponentsBasedOnAppState(appState);
+                appState = AppState.ON_OLD_VALIDATIONS;
+                updateVisualComponentsBasedOnAppState(appState);
+            }
+        });
     }
 
     public void getBuildings(View view) {
