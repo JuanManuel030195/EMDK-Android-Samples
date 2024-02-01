@@ -123,7 +123,7 @@ public class DBHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(VALIDATIONS_DATE_COL, validation.getDate().toString());
         values.put(VALIDATIONS_EMPLOYEE_NUMBER_COL, validation.getEmployeeNumber());
-        values.put(VALIDATIONS_BUILDING_ID_COL, validation.getId());
+        values.put(VALIDATIONS_BUILDING_ID_COL, validation.getBuilding().getId());
         values.put(VALIDATIONS_SENT_STATE_COL, validation.getSentState().ordinal());
         long newRowId = db.insert(VALIDATIONS_TABLE_NAME, null, values);
         db.close();
