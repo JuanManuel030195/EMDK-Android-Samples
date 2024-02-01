@@ -163,14 +163,14 @@
                         <TextView
                             android:id="@+id/oldValidationDateHeader"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="@string/opciones" />
 
                         <TextView
                             android:id="@+id/oldValidationDetailsHeader"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="@string/asset_number_header_text" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/informaci_n" />
                     </TableRow>
 
                 </TableLayout>
