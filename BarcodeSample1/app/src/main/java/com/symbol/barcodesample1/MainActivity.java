@@ -227,7 +227,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         Button button = new Button(MainActivity.this);
         button.setText("Actualizar");
-        button.setVisibility(itBelongsToCurrentValidation ? View.VISIBLE : View.GONE);
+        button.setVisibility(!itBelongsToCurrentValidation ? View.VISIBLE : View.GONE);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
