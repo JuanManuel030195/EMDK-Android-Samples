@@ -354,26 +354,24 @@ public class DBHandler extends SQLiteOpenHelper {
             int id = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_ID_COL));
             String employeeNumber = cursor.getString(cursor.getColumnIndex(VALIDATIONS_EMPLOYEE_NUMBER_COL));
             int buildingId = cursor.getInt(cursor.getColumnIndex(VALIDATIONS_BUILDING_ID_COL));
+
             boolean isEmployeeInDB = isEmployeeInDB(employeeNumber);
-            if (!isEmployeeInDB) {
-                continue;
-            }
-            Employee employee = getEmployeeByNumber(employeeNumber);
+            Employee employee = isEmployeeInDB
+                ? getEmployeeByNumber(employeeNumber)
+                : new Employee(employeeNumber, "Desconocido", 0);
+
             boolean isBuildingInDB = isBuildingInDB(buildingId);
-            if (!isBuildingInDB) {
-                continue;
-            }
-            Building building = getBuildingById(buildingId);
+            Building building = isBuildingInDB
+                ? getBuildingById(buildingId)
+                : new Building(buildingId, "Desconocido", "Desconocido");
 
             String strDate = cursor.getString(cursor.getColumnIndex(VALIDATIONS_DATE_COL));
             boolean isValidDate = strDate != null && !strDate.isEmpty();
-            if (!isValidDate) {
-                continue;
-            }
+            Date date = isValidDate ? new Date(strDate) : new Date();
 
             LocalValidation validation = new LocalValidation(
                 id,
-                new Date(strDate),
+                date,
                 employee,
                 building,
                 sentState
