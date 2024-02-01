@@ -159,8 +159,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         textViewData.setSelected(true);
         textViewData.setMovementMethod(new ScrollingMovementMethod());
 
-        dbHandler.clearValidations();
-
         appState = AppState.NOT_LOGGED_IN;
         updateVisualComponentsBasedOnAppState(appState);
 
