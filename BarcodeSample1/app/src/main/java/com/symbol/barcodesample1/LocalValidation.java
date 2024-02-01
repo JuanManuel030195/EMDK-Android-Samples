@@ -37,14 +37,14 @@ public class LocalValidation {
         return employee.getNumber();
     }
     public String getEmployeeName() {
-        return employee.getName();
+        return !employee.getName().equals("") ? employee.getName() : "Unknown";
     }
 
     public Building getBuilding() {
         return building;
     }
     public String getBuildingName() {
-        return building.getName();
+        return !building.getName().equals("") ? building.getName() : "Unknown";
     }
     public String getBuildingNumber() {
         return building.getNumber();
