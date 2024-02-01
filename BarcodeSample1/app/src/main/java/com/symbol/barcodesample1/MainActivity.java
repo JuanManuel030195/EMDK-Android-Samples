@@ -848,7 +848,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         TextView oldValidationDetailsTextView = new TextView(MainActivity.this);
         String oldValidationDetails = oldValidation.getDate().toString();
         oldValidationDetails += "\n" + oldValidation.getEmployeeName();
-        oldValidationDetails += "\n" + oldValidation.getBuildingName();
+        oldValidationDetails += "\n" + oldValidation.getBuilding().getName();
         oldValidationDetailsTextView.setText(oldValidationDetails);
 
         TableRow newTableRow = new TableRow(MainActivity.this);
@@ -1114,18 +1114,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         int id = (int) dbHandler.addValidation(localValidation);
         localValidation.setId(id);
 
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(
-                        MainActivity.this,
-                        localValidation.getBuilding().toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
-
         this.currentValidation = localValidation;
 
         Asset[] assets = dbHandler.getAssetsByValidation(localValidation);
@@ -1157,12 +1145,25 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     public void loadOldValidation(int validationId) {
         this.currentValidation = dbHandler.getValidationById(validationId);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        MainActivity.this,
+                        currentValidation.getBuilding().toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+
         this.currentAssetsPerValidation = dbHandler.getAssetsPerValidationByValidationId(validationId);
         this.assets = new Asset[this.currentAssetsPerValidation.length];
         for (int i = 0; i < this.currentAssetsPerValidation.length; i++) {
             this.assets[i] = dbHandler.getAssetByNumber(
                 this.currentAssetsPerValidation[i].getAssetNumber()
             );
+            addTableRowToTableLayout(this.assets[i]);
         }
 
         appState = AppState.ON_OLD_VALIDATION;
