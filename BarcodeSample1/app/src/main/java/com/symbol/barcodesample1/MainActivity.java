@@ -195,7 +195,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
         for (int i = 0; i < tableLayout.getChildCount(); i++) {
             TableRow tableRow = (TableRow) tableLayout.getChildAt(i);
-            TextView assetNumberTextView = (TextView) tableRow.getChildAt(0);
+            TextView assetNumberTextView = (TextView) tableRow.getChildAt(1);
             if (assetNumberTextView.getText().toString().equals(assetNumber)) {
                 switch (status) {
                     case PENDING:
