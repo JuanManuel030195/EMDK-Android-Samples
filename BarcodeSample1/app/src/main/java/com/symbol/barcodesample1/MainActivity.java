@@ -195,24 +195,35 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
         for (int i = 0; i < tableLayout.getChildCount(); i++) {
             TableRow tableRow = (TableRow) tableLayout.getChildAt(i);
+
             TextView assetNumberTextView = (TextView) tableRow.getChildAt(1);
-            if (assetNumberTextView.getText().toString().equals(assetNumber)) {
-                switch (status) {
-                    case PENDING:
-                        tableRow.setBackgroundColor(getColor(R.color.colorPending));
-                        break;
-                    case OK:
-                        tableRow.setBackgroundColor(getColor(R.color.colorOk));
-                        break;
-                    case WRONG_EMPLOYEE:
-                        tableRow.setBackgroundColor(getColor(R.color.colorWrongEmployee));
-                        break;
-                    case WRONG_BUILDING:
-                        tableRow.setBackgroundColor(getColor(R.color.colorWrongBuilding));
-                        break;
-                }
-                break;
+
+            if (!assetNumberTextView.getText().toString().equals(assetNumber)) {
+                continue;
             }
+
+            Button button = (Button) tableRow.getChildAt(0);
+
+            switch (status) {
+                case PENDING:
+                    button.setVisibility(View.GONE);
+                    tableRow.setBackgroundColor(getColor(R.color.colorPending));
+                    break;
+                case OK:
+                    button.setVisibility(View.GONE);
+                    tableRow.setBackgroundColor(getColor(R.color.colorOk));
+                    break;
+                case WRONG_EMPLOYEE:
+                    button.setVisibility(View.VISIBLE);
+                    tableRow.setBackgroundColor(getColor(R.color.colorWrongEmployee));
+                    break;
+                case WRONG_BUILDING:
+                    button.setVisibility(View.VISIBLE);
+                    tableRow.setBackgroundColor(getColor(R.color.colorWrongBuilding));
+                    break;
+            }
+
+            break;
         }
     }
 
