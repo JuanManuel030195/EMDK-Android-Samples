@@ -66,6 +66,14 @@
                 android:visibility="gone"/>
 
             <Button
+                android:id="@+id/goHomeButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/regresar"
+                android:onClick="goHome"
+                android:visibility="gone"/>
+
+            <Button
                 android:id="@+id/syncWithServerButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

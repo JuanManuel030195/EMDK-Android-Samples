@@ -1137,6 +1137,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         softScan(view);
     }
 
+    public void goHome(View view) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                appState = AppState.LOGGED_IN;
+                updateVisualComponentsBasedOnAppState(appState);
+            }
+        });
+    }
+
     public void closeValidation(View view) {
         appState = AppState.VALIDATION_ENDED;
         updateVisualComponentsBasedOnAppState(appState);
@@ -1164,6 +1174,10 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 this.currentAssetsPerValidation[i].getAssetNumber()
             );
             addTableRowToTableLayout(this.assets[i]);
+            updateTableRowColor(
+                this.assets[i].getNumber(),
+                this.currentAssetsPerValidation[i].getStatus()
+            );
         }
 
         appState = AppState.ON_OLD_VALIDATION;
@@ -1247,6 +1261,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         TextView textViewLoginStatus = (TextView) findViewById(R.id.loginProgress);
         Button loginButton = (Button) findViewById(R.id.loginButton);
         Button logOutButton = (Button) findViewById(R.id.logOutButton);
+        Button goHomeButton = (Button) findViewById(R.id.goHomeButton);
 
         Button syncWithServerButton = (Button) findViewById(R.id.syncWithServerButton);
         Button getEmployeesButton = (Button) findViewById(R.id.syncEmployeesWithServerButton);
@@ -1278,6 +1293,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 loginButton.setText(R.string.login_button_text);
                 loginButton.setVisibility(View.VISIBLE);
                 logOutButton.setVisibility(View.GONE);
+                goHomeButton.setVisibility(View.GONE);
 
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
@@ -1313,6 +1329,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.VISIBLE);
+                goHomeButton.setVisibility(View.GONE);
 
                 syncWithServerButton.setVisibility(View.VISIBLE);
                 getEmployeesButton.setVisibility(View.VISIBLE);
@@ -1344,6 +1361,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
+                goHomeButton.setVisibility(View.VISIBLE);
 
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
@@ -1371,6 +1389,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
+                goHomeButton.setVisibility(View.VISIBLE);
 
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
@@ -1398,6 +1417,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
+                goHomeButton.setVisibility(View.VISIBLE);
 
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);
@@ -1425,6 +1445,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 textViewLoginStatus.setText("");
                 loginButton.setVisibility(View.GONE);
                 logOutButton.setVisibility(View.GONE);
+                goHomeButton.setVisibility(View.VISIBLE);
 
                 syncWithServerButton.setVisibility(View.GONE);
                 getEmployeesButton.setVisibility(View.GONE);

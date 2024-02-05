@@ -53,5 +53,6 @@
     <string name="confrontas_pendientes">Confrontas pendientes</string>
     <string name="informaci_n">Información</string>
     <string name="actualizar">Actualizar</string>
+    <string name="regresar">Regresar a Inicio</string>
 
 </resources>
