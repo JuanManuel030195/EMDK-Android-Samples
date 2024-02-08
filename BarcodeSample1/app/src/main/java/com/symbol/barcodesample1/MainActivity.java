@@ -1042,6 +1042,32 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         textViewLoginStatus.setText(R.string.login_progress_signing_in_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
+        boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
+        if (isEmployeeSavedOnLocal) {
+            Employee employee = dbHandler.getEmployeeByNumber(this.username);
+            String salt = dbHandler.getEmployeeSalt(employee);
+            String password = dbHandler.getEmployeePassword(employee);
+            if (
+                !salt.isEmpty() &&
+                !password.isEmpty() &&
+                password.equals(this.password)
+            ) {
+                appState = AppState.LOGGED_IN;
+                updateVisualComponentsBasedOnAppState(appState);
+                return;
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewLoginStatus.setText(R.string.login_error_text);
+                    textViewLoginStatus.setVisibility(View.VISIBLE);
+                }
+            });
+
+            return;
+        }
+
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("numeroEmpleado", this.username);
