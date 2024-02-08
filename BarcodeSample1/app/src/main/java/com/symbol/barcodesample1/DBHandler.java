@@ -12,12 +12,14 @@ import java.util.Date;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cda";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static final String EMPLOYEES_TABLE_NAME = "usuarios";
     private static final String EMPLOYEES_ID_COL = "numeroEmpleado"; // primary key (string)
     private static final String EMPLOYEES_NAME_COL = "nombre"; // string
     private static final String EMPLOYEES_LEVEL_COL = "nivel"; // integer
+    private static final String EMPLOYEES_SALT_COL = "salt"; // string
+    private static final String EMPLOYEES_PASSWORD_COL = "password"; // string
 
     private static final String BUILDINGS_TABLE_NAME = "edificios";
     private static final String BUILDINGS_ID_COL = "idEdificio"; // primary key (integer)
@@ -53,7 +55,9 @@ public class DBHandler extends SQLiteOpenHelper {
         String createEmployeesTable = "CREATE TABLE " + EMPLOYEES_TABLE_NAME + " (" +
                 EMPLOYEES_ID_COL + " TEXT PRIMARY KEY, " +
                 EMPLOYEES_NAME_COL + " TEXT, " +
-                EMPLOYEES_LEVEL_COL + " INTEGER)";
+                EMPLOYEES_LEVEL_COL + " INTEGER, " +
+                EMPLOYEES_SALT_COL + " TEXT, " +
+                EMPLOYEES_PASSWORD_COL + " TEXT)";
         db.execSQL(createEmployeesTable);
 
         String createBuildingsTable = "CREATE TABLE " + BUILDINGS_TABLE_NAME + " (" +
@@ -314,6 +318,32 @@ public class DBHandler extends SQLiteOpenHelper {
         return employee;
     }
 
+    public String getEmployeeSalt(@NotNull Employee employee) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT " + EMPLOYEES_SALT_COL + " FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{employee.getNumber()});
+        String salt = null;
+        if (cursor.moveToFirst()) {
+            salt = cursor.getString(cursor.getColumnIndex(EMPLOYEES_SALT_COL));
+        }
+        cursor.close();
+        db.close();
+        return salt;
+    }
+
+    public String getEmployeePassword(@NotNull Employee employee) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT " + EMPLOYEES_PASSWORD_COL + " FROM " + EMPLOYEES_TABLE_NAME + " WHERE " + EMPLOYEES_ID_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{employee.getNumber()});
+        String password = null;
+        if (cursor.moveToFirst()) {
+            password = cursor.getString(cursor.getColumnIndex(EMPLOYEES_PASSWORD_COL));
+        }
+        cursor.close();
+        db.close();
+        return password;
+    }
+
     public Building getBuildingById(int id) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + BUILDINGS_TABLE_NAME + " WHERE " + BUILDINGS_ID_COL + " = ?";
@@ -544,6 +574,35 @@ public class DBHandler extends SQLiteOpenHelper {
             String.valueOf(asset.getBuildingId()),
             asset.getNumber()
         });
+
+        db.close();
+    }
+
+    public void updateEmployeeSalt(@NotNull Employee employee, String salt) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "UPDATE " + EMPLOYEES_TABLE_NAME + " SET " + EMPLOYEES_SALT_COL + " = ? WHERE " + EMPLOYEES_ID_COL + " = ?";
+        db.execSQL(query, new String[]{salt, employee.getNumber()});
+        db.close();
+    }
+
+    public void updateEmployeePassword(@NotNull Employee employee, String password) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "UPDATE " + EMPLOYEES_TABLE_NAME + " SET " + EMPLOYEES_PASSWORD_COL + " = ? WHERE " + EMPLOYEES_ID_COL + " = ?";
+        db.execSQL(query, new String[]{password, employee.getNumber()});
+        db.close();
+    }
+
+    public void updateEmployee(@NotNull Employee employee) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "UPDATE " + EMPLOYEES_TABLE_NAME + " SET " + EMPLOYEES_NAME_COL + " = ?, " + EMPLOYEES_LEVEL_COL + " = ? WHERE " + EMPLOYEES_ID_COL + " = ?";
+        db.execSQL(
+            query,
+            new String[]{
+                employee.getName(),
+                String.valueOf(employee.getLevel()),
+                employee.getNumber()
+            }
+        );
 
         db.close();
     }
