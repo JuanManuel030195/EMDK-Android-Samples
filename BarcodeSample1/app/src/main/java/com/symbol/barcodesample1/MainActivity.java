@@ -1096,6 +1096,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             String salt = dbHandler.getEmployeeSalt(employee);
             Log.d("login", "local salt: " + salt);
 
+            dbHandler.updateEmployeePassword(employee, this.password);
             String password = dbHandler.getEmployeePassword(employee);
             Log.d("login", "local password: " + password);
 
