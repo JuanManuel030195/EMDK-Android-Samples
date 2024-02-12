@@ -883,13 +883,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         this.buildings = buildings;
     }
 
-    private void addTableRowToOldValidationsTable(LocalValidation oldValidation) {
+    private void addTableRowToOldValidationsTable(
+        LocalValidation oldValidation,
+        View view
+    ) {
         Button button = new Button(MainActivity.this);
         button.setText(R.string.continuar);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadOldValidation(oldValidation.getId());
+                loadOldValidation(oldValidation.getId(), view);
             }
         });
 
@@ -920,7 +923,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         continue;
                     }
 
-                    addTableRowToOldValidationsTable(localValidation);
+                    addTableRowToOldValidationsTable(localValidation, view);
                 }
 
                 appState = AppState.ON_OLD_VALIDATIONS;
@@ -1217,6 +1220,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 }
             );
         } catch (IOException e) {
+            Log.d("login", "login with server failed. IOException");
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
         }
@@ -1293,7 +1297,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         deInitScanner();
     }
 
-    public void loadOldValidation(int validationId) {
+    public void loadOldValidation(int validationId, View view) {
         this.currentValidation = dbHandler.getValidationById(validationId);
 
         runOnUiThread(new Runnable() {
@@ -1322,6 +1326,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         appState = AppState.ON_OLD_VALIDATION;
         updateVisualComponentsBasedOnAppState(appState);
+
+        initScanner();
+        softScan(view);
     }
 
     public LocalValidation[] getOldValidations(SentState sentState) {
