@@ -1089,7 +1089,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             String salt = dbHandler.getEmployeeSalt(employee);
             String password = dbHandler.getEmployeePassword(employee);
             if (
-                !salt.isEmpty() &&
                 !password.isEmpty() &&
                 password.equals(this.password)
             ) {
@@ -1099,6 +1098,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         currentEmployee = employee;
 
                         loadSpinnerData();
+
+                        Toast.makeText(
+                            MainActivity.this,
+                            "Bienvenido " + currentEmployee.getName(),
+                            Toast.LENGTH_LONG
+                        ).show();
 
                         appState = AppState.LOGGED_IN;
                         updateVisualComponentsBasedOnAppState(appState);
@@ -1152,6 +1157,12 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             dbHandler.updateEmployeePassword(currentEmployee, this.password);
 
                             loadSpinnerData();
+
+                            Toast.makeText(
+                                MainActivity.this,
+                                "Hola " + currentEmployee.getName() + "!",
+                                Toast.LENGTH_LONG
+                            ).show();
 
                             appState = AppState.LOGGED_IN;
                             updateVisualComponentsBasedOnAppState(appState);
