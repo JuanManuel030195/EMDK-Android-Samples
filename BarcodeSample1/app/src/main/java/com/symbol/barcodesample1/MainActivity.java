@@ -103,6 +103,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     private final MediaType jsonMediaType = MediaType.parse("application/json; charset=utf-8");
     private final String baseUrl = "http://cda.ceaqueretaro.gob.mx/";
 
+    private Employee currentEmployee = null;
     private String username = "";
     private String password = "";
 
@@ -125,15 +126,6 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         setDefaultOrientation();
 
         dbHandler = new DBHandler(MainActivity.this);
-
-        setEmployees(dbHandler.getEmployees());
-        setEmployeesToSpinner();
-
-
-        setBuildings(dbHandler.getBuildings());
-        setBuildingsToSpinner();
-
-        setAssets(dbHandler.getAssets());
 
         textViewData = (TextView)findViewById(R.id.textViewData);
         textViewStatus = (TextView)findViewById(R.id.textViewStatus);
@@ -161,6 +153,48 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
         appState = AppState.NOT_LOGGED_IN;
         updateVisualComponentsBasedOnAppState(appState);
+    }
+
+    private void loadSpinnerData() {
+        setAssets(dbHandler.getAssets());
+
+        if (currentEmployee.getLevel() == 2) {
+            setEmployees(dbHandler.getEmployees());
+        } else {
+            setEmployees(new Employee[] { currentEmployee });
+        }
+        setEmployeesToSpinner();
+
+        Building[] buildings = dbHandler.getBuildings();
+        if (currentEmployee.getLevel() != 2) {
+            Asset[] assetsFromCurrentEmployee = new Asset[0];
+            for (Asset asset: this.assets) {
+                if (asset.getEmployeeNumber().equals(currentEmployee.getNumber())) {
+                    assetsFromCurrentEmployee = new Asset[assetsFromCurrentEmployee.length + 1];
+                    assetsFromCurrentEmployee[assetsFromCurrentEmployee.length - 1] = asset;
+                }
+            }
+
+            Building[] buildingFromAssets = new Building[0];
+            for (Asset asset: assetsFromCurrentEmployee) {
+                boolean buildingIsInArray = false;
+                for (Building building: buildingFromAssets) {
+                    if (building.getName().equals(asset.getBuildingName())) {
+                        buildingIsInArray = true;
+                        break;
+                    }
+                }
+
+                if (!buildingIsInArray) {
+                    buildingFromAssets = new Building[buildingFromAssets.length + 1];
+                    buildingFromAssets[buildingFromAssets.length - 1] = dbHandler.getBuildingById(asset.getBuildingId());
+                }
+            }
+
+            buildings = buildingFromAssets;
+        }
+        setBuildings(buildings);
+        setBuildingsToSpinner();
 
         updateSyncButtonsText();
     }
@@ -876,6 +910,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             public void run() {
                 LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
                 for (LocalValidation localValidation : localValidations) {
+                    if (
+                        currentEmployee.getLevel() != 2 &&
+                        !localValidation.getEmployeeNumber().equals(currentEmployee.getNumber())
+                    ) {
+                        continue;
+                    }
+
                     addTableRowToOldValidationsTable(localValidation);
                 }
 
@@ -1052,8 +1093,17 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 !password.isEmpty() &&
                 password.equals(this.password)
             ) {
-                appState = AppState.LOGGED_IN;
-                updateVisualComponentsBasedOnAppState(appState);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentEmployee = employee;
+
+                        loadSpinnerData();
+
+                        appState = AppState.LOGGED_IN;
+                        updateVisualComponentsBasedOnAppState(appState);
+                    }
+                });
                 return;
             }
 
@@ -1093,6 +1143,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             responseBody.has("success") &&
                             responseBody.getBoolean("success")
                         ) {
+                            currentEmployee = new Employee(
+                                responseBody.getString("numeroEmpleado"),
+                                responseBody.getString("nombre"),
+                                responseBody.getInt("nivel")
+                            );
+                            dbHandler.addEmployee(currentEmployee);
+                            dbHandler.updateEmployeePassword(currentEmployee, this.password);
+
+                            loadSpinnerData();
+
                             appState = AppState.LOGGED_IN;
                             updateVisualComponentsBasedOnAppState(appState);
                             return null;
@@ -1368,9 +1428,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 logOutButton.setVisibility(View.VISIBLE);
                 goHomeButton.setVisibility(View.GONE);
 
-                syncWithServerButton.setVisibility(View.VISIBLE);
-                getEmployeesButton.setVisibility(View.VISIBLE);
-                getBuildingsButton.setVisibility(View.VISIBLE);
+                syncWithServerButton.setVisibility(currentEmployee.getLevel() == 2 ? View.VISIBLE : View.GONE);
+                getEmployeesButton.setVisibility(currentEmployee.getLevel() == 2 ? View.VISIBLE : View.GONE);
+                getBuildingsButton.setVisibility(currentEmployee.getLevel() == 2 ? View.VISIBLE : View.GONE);
                 getOldValidationsButton.setVisibility(View.VISIBLE);
 
                 employeeSpinner.setVisibility(View.VISIBLE);

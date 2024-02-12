@@ -193,7 +193,12 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public void addEmployees(@NotNull Employee[] employees) {
         for (Employee employee : employees) {
-            addEmployee(employee);
+            if (!isEmployeeInDB(employee.getNumber())) {
+                addEmployee(employee);
+                continue;
+            }
+
+            updateEmployee(employee);
         }
     }
 
