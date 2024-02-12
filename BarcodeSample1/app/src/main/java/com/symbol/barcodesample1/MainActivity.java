@@ -1151,6 +1151,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             requestBody.put("numeroEmpleado", this.username);
             requestBody.put("password", this.password);
         } catch (JSONException e) {
+            Log.d("login", "login failed. JSONException");
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());
             return;
@@ -1162,6 +1163,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 endPoint,
                 requestBody,
                 (IOException e) -> {
+                    Log.d("login", "login with server failed. IOException:" + e.getMessage());
                     onLoginFailed(e);
                     return null;
                 },
