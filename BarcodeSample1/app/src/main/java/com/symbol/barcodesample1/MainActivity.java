@@ -851,7 +851,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            dbHandler.clearEmployees();
+//                            dbHandler.clearEmployees();
                             dbHandler.addEmployees(employeesArray);
                             setEmployees(employeesArray);
                             setEmployeesToSpinner();
