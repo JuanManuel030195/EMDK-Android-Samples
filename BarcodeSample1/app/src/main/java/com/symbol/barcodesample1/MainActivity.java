@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -1076,6 +1077,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     public void login(View view) {
+        Log.d("login", "start to login");
+
         getUserName();
         getPassword();
 
@@ -1083,45 +1086,52 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         textViewLoginStatus.setText(R.string.login_progress_signing_in_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
-//        boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
-//        if (isEmployeeSavedOnLocal) {
-//            Employee employee = dbHandler.getEmployeeByNumber(this.username);
-//            String salt = dbHandler.getEmployeeSalt(employee);
-//            String password = dbHandler.getEmployeePassword(employee);
-//            if (
-//                !password.isEmpty() &&
-//                password.equals(this.password)
-//            ) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        currentEmployee = employee;
-//
-//                        loadSpinnerData();
-//
-//                        Toast.makeText(
-//                            MainActivity.this,
-//                            "Bienvenido " + currentEmployee.getName(),
-//                            Toast.LENGTH_LONG
-//                        ).show();
-//
-//                        appState = AppState.LOGGED_IN;
-//                        updateVisualComponentsBasedOnAppState(appState);
-//                    }
-//                });
-//                return;
-//            }
-//
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    textViewLoginStatus.setText(R.string.login_error_text);
-//                    textViewLoginStatus.setVisibility(View.VISIBLE);
-//                }
-//            });
-//
-//            return;
-//        }
+        boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
+        if (isEmployeeSavedOnLocal) {
+            Log.d("login", "employee is saved on local");
+            Employee employee = dbHandler.getEmployeeByNumber(this.username);
+            String salt = dbHandler.getEmployeeSalt(employee);
+            String password = dbHandler.getEmployeePassword(employee);
+            if (
+                !password.isEmpty() &&
+                password.equals(this.password)
+            ) {
+                Log.d("login", "local password is correct");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentEmployee = employee;
+
+                        loadSpinnerData();
+
+                        Toast.makeText(
+                            MainActivity.this,
+                            "Bienvenido " + currentEmployee.getName(),
+                            Toast.LENGTH_LONG
+                        ).show();
+
+                        appState = AppState.LOGGED_IN;
+                        updateVisualComponentsBasedOnAppState(appState);
+                    }
+                });
+                return;
+            }
+
+            Log.d("login", "local password is incorrect");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewLoginStatus.setText(R.string.login_error_text);
+                    textViewLoginStatus.setVisibility(View.VISIBLE);
+                }
+            });
+
+            return;
+        }
+
+        Log.d("login", "employee is not saved on local");
+        Log.d("login", "start to login with server");
 
         JSONObject requestBody = new JSONObject();
         try {
@@ -1143,11 +1153,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                     return null;
                 },
                 (JSONObject responseBody) -> {
+                    Log.d("login", "response from server");
                     try {
                         if (
                             responseBody.has("success") &&
                             responseBody.getBoolean("success")
                         ) {
+                            Log.d("login", "login success");
+                            Log.d("login", responseBody.toString());
                             currentEmployee = new Employee(
                                 responseBody.getString("numeroEmpleado"),
                                 responseBody.getString("nombre"),
@@ -1155,6 +1168,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             );
                             dbHandler.addEmployee(currentEmployee);
                             dbHandler.updateEmployeePassword(currentEmployee, this.password);
+
+                            Log.d("login", "employee saved on local");
 
                             loadSpinnerData();
 
@@ -1169,6 +1184,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                             return null;
                         }
 
+                        Log.d("login", "login failed");
+
                         textViewLoginStatus.setText(R.string.login_error_text);
                         textViewLoginStatus.setVisibility(View.VISIBLE);
                     } catch (JSONException e) {
@@ -1176,9 +1193,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         textViewLoginStatus.setVisibility(View.VISIBLE);
                     }
 
+                    Log.d("login", "end of response from server");
+
                     return null;
                 },
                 (JSONException e) -> {
+                    Log.d("login", "login failed. JSONException");
+
                     textViewLoginStatus.setText(e.getMessage());
                     textViewLoginStatus.setVisibility(View.VISIBLE);
                     return null;
