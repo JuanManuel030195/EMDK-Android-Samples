@@ -1083,45 +1083,45 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         textViewLoginStatus.setText(R.string.login_progress_signing_in_text);
         textViewLoginStatus.setVisibility(View.VISIBLE);
 
-        boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
-        if (isEmployeeSavedOnLocal) {
-            Employee employee = dbHandler.getEmployeeByNumber(this.username);
-            String salt = dbHandler.getEmployeeSalt(employee);
-            String password = dbHandler.getEmployeePassword(employee);
-            if (
-                !password.isEmpty() &&
-                password.equals(this.password)
-            ) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentEmployee = employee;
-
-                        loadSpinnerData();
-
-                        Toast.makeText(
-                            MainActivity.this,
-                            "Bienvenido " + currentEmployee.getName(),
-                            Toast.LENGTH_LONG
-                        ).show();
-
-                        appState = AppState.LOGGED_IN;
-                        updateVisualComponentsBasedOnAppState(appState);
-                    }
-                });
-                return;
-            }
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    textViewLoginStatus.setText(R.string.login_error_text);
-                    textViewLoginStatus.setVisibility(View.VISIBLE);
-                }
-            });
-
-            return;
-        }
+//        boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
+//        if (isEmployeeSavedOnLocal) {
+//            Employee employee = dbHandler.getEmployeeByNumber(this.username);
+//            String salt = dbHandler.getEmployeeSalt(employee);
+//            String password = dbHandler.getEmployeePassword(employee);
+//            if (
+//                !password.isEmpty() &&
+//                password.equals(this.password)
+//            ) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        currentEmployee = employee;
+//
+//                        loadSpinnerData();
+//
+//                        Toast.makeText(
+//                            MainActivity.this,
+//                            "Bienvenido " + currentEmployee.getName(),
+//                            Toast.LENGTH_LONG
+//                        ).show();
+//
+//                        appState = AppState.LOGGED_IN;
+//                        updateVisualComponentsBasedOnAppState(appState);
+//                    }
+//                });
+//                return;
+//            }
+//
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    textViewLoginStatus.setText(R.string.login_error_text);
+//                    textViewLoginStatus.setVisibility(View.VISIBLE);
+//                }
+//            });
+//
+//            return;
+//        }
 
         JSONObject requestBody = new JSONObject();
         try {
