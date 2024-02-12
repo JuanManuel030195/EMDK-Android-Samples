@@ -1161,10 +1161,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         ) {
                             Log.d("login", "login success");
                             Log.d("login", responseBody.toString());
+                            JSONObject jsonEmployee = responseBody.getJSONObject("usuario");
                             currentEmployee = new Employee(
-                                responseBody.getString("numeroEmpleado"),
-                                responseBody.getString("nombre"),
-                                responseBody.getInt("nivel")
+                                jsonEmployee.getString("numeroEmpleado"),
+                                jsonEmployee.getString("nombre"),
+                                jsonEmployee.getInt("nivel")
                             );
                             dbHandler.addEmployee(currentEmployee);
                             dbHandler.updateEmployeePassword(currentEmployee, this.password);
