@@ -1453,6 +1453,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 oldValidationsTable.setVisibility(View.GONE);
                 break;
             case LOGGED_IN:
+                employeeSpinner.setText(employees[0].getName(), false);
+                buildingSpinner.setText(buildings[0].getName(), false);
+
                 boolean isEmployeeInLocal = dbHandler.isEmployeeInDB(this.username);
                 String userNameLabelText = isEmployeeInLocal
                     ? dbHandler.getEmployeeByNumber(this.username).getName()
