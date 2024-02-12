@@ -1098,43 +1098,46 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             String password = dbHandler.getEmployeePassword(employee);
             Log.d("login", "local password: " + password);
 
+            boolean hasPassword = password != null && !password.isEmpty();
+
             if (
-                password != null &&
-                !password.isEmpty() &&
-                password.equals(this.password)
+                hasPassword
             ) {
-                Log.d("login", "local password is correct");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentEmployee = employee;
 
-                        loadSpinnerData();
+                if (password.equals(this.password)) {
+                    Log.d("login", "local password is correct");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            currentEmployee = employee;
 
-                        Toast.makeText(
-                            MainActivity.this,
-                            "Bienvenido " + currentEmployee.getName(),
-                            Toast.LENGTH_LONG
-                        ).show();
+                            loadSpinnerData();
 
-                        appState = AppState.LOGGED_IN;
-                        updateVisualComponentsBasedOnAppState(appState);
-                    }
-                });
-                return;
-            }
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Bienvenido " + currentEmployee.getName(),
+                                    Toast.LENGTH_LONG
+                            ).show();
 
-            Log.d("login", "local password is incorrect");
+                            appState = AppState.LOGGED_IN;
+                            updateVisualComponentsBasedOnAppState(appState);
+                        }
+                    });
+                    return;
+                } else {
+                    Log.d("login", "local password is incorrect");
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    textViewLoginStatus.setText(R.string.login_error_text);
-                    textViewLoginStatus.setVisibility(View.VISIBLE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewLoginStatus.setText(R.string.login_error_text);
+                            textViewLoginStatus.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    return;
                 }
-            });
-
-            return;
+            }
         }
 
         Log.d("login", "employee is not saved on local");
