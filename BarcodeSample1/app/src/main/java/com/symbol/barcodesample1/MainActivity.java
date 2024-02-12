@@ -1095,13 +1095,11 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             Employee employee = dbHandler.getEmployeeByNumber(this.username);
             Log.d("login", "local employee: " + employee.getNumber() + " " + employee.getName() + " " + employee.getLevel());
 
-            String salt = dbHandler.getEmployeeSalt(employee);
-            Log.d("login", "local salt: " + salt);
-
             String password = dbHandler.getEmployeePassword(employee);
             Log.d("login", "local password: " + password);
 
             if (
+                password != null &&
                 !password.isEmpty() &&
                 password.equals(this.password)
             ) {
