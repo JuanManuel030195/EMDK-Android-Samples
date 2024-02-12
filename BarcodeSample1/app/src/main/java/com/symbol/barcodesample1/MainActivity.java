@@ -1089,9 +1089,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         boolean isEmployeeSavedOnLocal = dbHandler.isEmployeeInDB(this.username);
         if (isEmployeeSavedOnLocal) {
             Log.d("login", "employee is saved on local");
+
             Employee employee = dbHandler.getEmployeeByNumber(this.username);
+            Log.d("login", "local employee: " + employee.getNumber() + " " + employee.getName() + " " + employee.getLevel());
+
             String salt = dbHandler.getEmployeeSalt(employee);
+            Log.d("login", "local salt: " + salt);
+
             String password = dbHandler.getEmployeePassword(employee);
+            Log.d("login", "local password: " + password);
+
             if (
                 !password.isEmpty() &&
                 password.equals(this.password)
