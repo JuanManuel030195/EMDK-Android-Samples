@@ -924,6 +924,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                TableLayout tableLayout = (TableLayout) findViewById(R.id.oldValidationsTable);
+                tableLayout.removeAllViews();
+
                 LocalValidation[] localValidations = getOldValidations(SentState.NOT_SENT);
                 for (LocalValidation localValidation : localValidations) {
                     if (
