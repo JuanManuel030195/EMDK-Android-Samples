@@ -306,6 +306,16 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         tableLayout.addView(newTableRow);
     }
 
+    private void clearAllTableRowsFromTableLayout() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
+                tableLayout.removeAllViews();
+            }
+        });
+    }
+
     private void removeTableRowFromTableLayout(Asset asset) {
         TableLayout tableLayout = (TableLayout) findViewById(R.id.scannedAssetsTable);
         for (int i = 0; i < tableLayout.getChildCount(); i++) {
@@ -892,7 +902,7 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadOldValidation(oldValidation.getId(), view);
+                loadOldValidation(oldValidation, view);
             }
         });
 
@@ -1244,6 +1254,8 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     }
 
     public void startValidation(View view) {
+        clearAllTableRowsFromTableLayout();
+
         AutoCompleteTextView employeeTextView = (AutoCompleteTextView) findViewById(R.id.employeeSpinner);
         String employeeName = employeeTextView.getText().toString().trim();
         Employee employee = dbHandler.getEmployeeByName(employeeName);
@@ -1272,15 +1284,33 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                     assets[i].getNumber()
             );
 
-            addTableRowToTableLayout(assets[i]);
-            updateTableRowColor(assets[i].getNumber(), ValidationStatus.PENDING);
+            int finalI = i;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addTableRowToTableLayout(assets[finalI]);
+                    updateTableRowColor(assets[finalI].getNumber(), ValidationStatus.PENDING);
+                }
+            });
         }
 
         appState = AppState.VALIDATION_STARTED;
-        updateVisualComponentsBasedOnAppState(appState);
 
-        initScanner();
-        softScan(view);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        MainActivity.this,
+                        "Validación iniciada!",
+                        Toast.LENGTH_LONG
+                ).show();
+
+                updateVisualComponentsBasedOnAppState(appState);
+
+                initScanner();
+                softScan(view);
+            }
+        });
     }
 
     public void goHome(View view) {
@@ -1299,8 +1329,31 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         deInitScanner();
     }
 
-    public void loadOldValidation(int validationId, View view) {
-        this.currentValidation = dbHandler.getValidationById(validationId);
+    public void loadOldValidation(LocalValidation oldValidation, View view) {
+        clearAllTableRowsFromTableLayout();
+
+        this.currentValidation = oldValidation;
+
+        this.assets = dbHandler.getAssetsByValidation(oldValidation);
+        this.currentAssetsPerValidation = dbHandler.getAssetsPerValidationByValidationId(oldValidation.getId());
+        for (AssetPerValidation assetPerValidation : this.currentAssetsPerValidation) {
+            Asset currentAsset = dbHandler.getAssetByNumber(
+                    assetPerValidation.getAssetNumber()
+            );
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addTableRowToTableLayout(currentAsset);
+                    updateTableRowColor(
+                            currentAsset.getNumber(),
+                            assetPerValidation.getStatus()
+                    );
+                }
+            });
+        }
+
+        appState = AppState.ON_OLD_VALIDATION;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -1310,27 +1363,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                         currentValidation.getBuilding().toString(),
                         Toast.LENGTH_LONG
                 ).show();
+
+                updateVisualComponentsBasedOnAppState(appState);
+
+                initScanner();
+                softScan(view);
             }
         });
-
-        this.currentAssetsPerValidation = dbHandler.getAssetsPerValidationByValidationId(validationId);
-        this.assets = new Asset[this.currentAssetsPerValidation.length];
-        for (int i = 0; i < this.currentAssetsPerValidation.length; i++) {
-            this.assets[i] = dbHandler.getAssetByNumber(
-                this.currentAssetsPerValidation[i].getAssetNumber()
-            );
-            addTableRowToTableLayout(this.assets[i]);
-            updateTableRowColor(
-                this.assets[i].getNumber(),
-                this.currentAssetsPerValidation[i].getStatus()
-            );
-        }
-
-        appState = AppState.ON_OLD_VALIDATION;
-        updateVisualComponentsBasedOnAppState(appState);
-
-        initScanner();
-        softScan(view);
     }
 
     public LocalValidation[] getOldValidations(SentState sentState) {
