@@ -54,5 +54,6 @@
     <string name="informaci_n">Información</string>
     <string name="actualizar">Actualizar</string>
     <string name="regresar">Regresar a Inicio</string>
+    <string name="ver_info_activos">Ver Información del Activo</string>
 
 </resources>
