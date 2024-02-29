@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/syncWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_with_server_button_text"
+                android:onClick="getAssets"
+                android:gravity="start|center_vertical"/>
+
+            <Button
+                android:id="@+id/syncEmployeesWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_employees"
+                android:onClick="getEmployees"
+                android:gravity="start|center_vertical"/>
+
+            <Button
+                android:id="@+id/syncBuildingsWithServerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/sync_buildings"
+                android:onClick="getBuildings"
+                android:gravity="start|center_vertical"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/closeValidationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/close_validation_button_text"
+                android:onClick="closeValidation"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/sendValidationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/send_validation_button_text"
+                android:onClick="sendValidation"
+                android:visibility="gone" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="horizontal|vertical">
+
+                <TableLayout
+                    android:id="@+id/scannedAssetsTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <TableRow
+                        android:id="@+id/scannedAssetsTableHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/assetActionsHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/opciones" />
+
+                        <TextView
+                            android:id="@+id/assetNumberHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/asset_number_header_text" />
+
+                        <TextView
+                            android:id="@+id/assetDescriptionHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/asset_description_header_text"/>
+                    </TableRow>
+
+                </TableLayout>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
