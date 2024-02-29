@@ -146,6 +146,14 @@
                 android:visibility="gone" />
 
             <Button
+                android:id="@+id/getAssetInfoButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/ver_info_activos"
+                android:onClick="getAssetInfo"
+                android:visibility="gone" />
+
+            <Button
                 android:id="@+id/buttonScan"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
