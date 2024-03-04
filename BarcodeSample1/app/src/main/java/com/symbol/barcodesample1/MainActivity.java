@@ -518,6 +518,13 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             validationInfo += "\n Número SAP: " + currentAsset.getNumber();
             validationInfo += "\n Descripción: " + currentAsset.getDescription();
             validationInfo += "\n Edificio: " + currentAsset.getBuildingName();
+            validationInfo += "\n Número de empleado: " + currentAsset.getEmployeeNumber();
+
+            Employee employee = dbHandler.getEmployeeByNumber(currentAsset.getEmployeeNumber());
+            if (employee != null) {
+                validationInfo += "\n Nombre de empleado: " + employee.getName();
+            }
+
         }
 
         userNameLabel.setText(validationInfo);
