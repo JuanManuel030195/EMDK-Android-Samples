@@ -1471,9 +1471,14 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
     public void getAssetInfo(View view) {
         appState = AppState.ON_ASSET_INFO;
         updateVisualComponentsBasedOnAppState(appState);
-        softScan(view);
 
-        showAssetInfo("5110000031");
+        deInitBarcodeManager();
+        initBarcodeManager();
+
+        deInitScanner();
+        initScanner();
+
+        softScan(view);
     }
 
     private void updateVisualComponentsBasedOnAppState(AppState state) {
