@@ -491,7 +491,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        updateValidationData(data.getData());
+                        if (appState == AppState.VALIDATION_STARTED) {
+                            updateValidationData(data.getData());
+                        }
 
                         if (appState == AppState.ON_ASSET_INFO) {
                             showAssetInfo(data.getData());
