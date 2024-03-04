@@ -523,8 +523,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
             Employee employee = dbHandler.getEmployeeByNumber(currentAsset.getEmployeeNumber());
             if (employee != null) {
                 validationInfo += "\n Nombre de empleado: " + employee.getName();
+            } else {
+                validationInfo += "\n Nombre de empleado: No encontrado";
             }
-
         }
 
         userNameLabel.setText(validationInfo);
