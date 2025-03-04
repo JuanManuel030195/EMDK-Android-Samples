@@ -117,6 +117,22 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
 
     private AppState appState;
 
+    private JSONArray assetsToJsonArray(Asset[] assets) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (Asset asset: assets) {
+            jsonArray.put(asset.toJson());
+        }
+        return jsonArray;
+    }
+
+    private JSONArray currentAssetsPerValidationToJsonArray(AssetPerValidation[] assetPerValidations) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (AssetPerValidation assetPerValidation: assetPerValidations) {
+            jsonArray.put(assetPerValidation.toJson());
+        }
+        return jsonArray;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1422,9 +1438,9 @@ public class MainActivity extends Activity implements EMDKListener, DataListener
         try {
             requestBody.put("numeroEmpleado", this.username);
             requestBody.put("password", this.password);
-            requestBody.put("currentValidation", this.currentValidation);
-            requestBody.put("assets", this.assets);
-            requestBody.put("currentAssetsPerValidation", this.currentAssetsPerValidation);
+            requestBody.put("currentValidation", this.currentValidation.toJson());
+            requestBody.put("assets", this.assetsToJsonArray(this.assets));
+            requestBody.put("currentAssetsPerValidation", this.currentAssetsPerValidationToJsonArray(this.currentAssetsPerValidation));
         } catch (JSONException e) {
             textViewLoginStatus.setText(R.string.sync_error_text);
             System.out.println(e.getMessage());

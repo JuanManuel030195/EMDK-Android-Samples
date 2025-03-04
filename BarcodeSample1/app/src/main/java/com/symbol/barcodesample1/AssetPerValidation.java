@@ -1,6 +1,8 @@
 package com.symbol.barcodesample1;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AssetPerValidation {
     private final int validationId;
@@ -55,5 +57,14 @@ public class AssetPerValidation {
 
     public void setStatus(ValidationStatus status) {
         this.status = status;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("validationId", validationId);
+        json.put("assetNumber", assetNumber);
+        json.put("scanned", scanned);
+        json.put("status", status.toString());
+        return json;
     }
 }

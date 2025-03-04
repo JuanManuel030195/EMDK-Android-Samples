@@ -1,5 +1,8 @@
 package com.symbol.barcodesample1;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -37,6 +40,14 @@ public class Employee {
 
     public int getLevel() {
         return level;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("number", number);
+        json.put("name", name);
+        json.put("level", level);
+        return json;
     }
 
     public static String getSaltValue(int length) {

@@ -1,5 +1,8 @@
 package com.symbol.barcodesample1;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 public class LocalValidation {
@@ -64,5 +67,15 @@ public class LocalValidation {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("date", date.getTime());
+        json.put("employee", employee.toJson());
+        json.put("building", building.toJson());
+        json.put("sentState", sentState.toString());
+        return json;
     }
 }

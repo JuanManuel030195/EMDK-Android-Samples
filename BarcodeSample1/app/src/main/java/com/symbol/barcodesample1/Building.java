@@ -1,5 +1,8 @@
 package com.symbol.barcodesample1;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Building {
     private final int id;
     private final String name;
@@ -25,6 +28,14 @@ public class Building {
 
     @Override
     public String toString() {
-    return name + " (" + number + "," + id + ")";
+        return name + " (" + number + "," + id + ")";
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("name", name);
+        json.put("number", number);
+        return json;
     }
 }

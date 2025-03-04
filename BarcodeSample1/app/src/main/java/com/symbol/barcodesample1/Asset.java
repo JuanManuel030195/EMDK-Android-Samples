@@ -1,5 +1,8 @@
 package com.symbol.barcodesample1;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Asset {
     private final String number;
     private final String description;
@@ -46,5 +49,15 @@ public class Asset {
 
     public void setEmployeeNumber(String employeeNumber) {
         this.employeeNumber = employeeNumber;
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("number", number);
+        json.put("description", description);
+        json.put("buildingName", buildingName);
+        json.put("buildingId", buildingId);
+        json.put("employeeNumber", employeeNumber);
+        return json;
     }
 }
