@@ -1,10 +1,12 @@
 apply plugin: 'com.android.application'
+
 android {
-    compileSdkVersion 26
+    compileSdkVersion 33
+    namespace 'com.symbol.barcodesample1'
     defaultConfig {
         applicationId "com.symbol.barcodesample1"
-        minSdkVersion 24
-        targetSdkVersion 26
+        minSdkVersion 26
+        targetSdkVersion 33
         versionCode 12
         versionName "7.3.1"
     }
@@ -15,6 +17,7 @@ android {
         }
     }
 }
+
 dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     compileOnly 'com.symbol:emdk:11.0.134'
